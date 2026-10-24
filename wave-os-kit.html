@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="ko" data-heritage="eric1013">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#02050b" />
+  <script>document.documentElement.classList.add('js');</script>
+  <!-- 레이어 우선순위 선언: 이 한 줄이 있으면 kit(wos)이 다른 프로젝트 CSS와 충돌하지 않습니다 -->
+  <style>@layer wos-reset, wos, demo;</style>
+  <title>WAVE OS 3.0 — Standalone Glass & Button UI Kit</title>
+
+  <!-- ============================================================================
+       [1] WAVE OS 3.0 CORE CSS (다른 프로젝트에 그대로 복사·붙여넣기 가능한 독립 스타일시트)
+       ============================================================================ -->
+  <style id="wave-os-core-css">
+    @layer wos {
+    /* 공통 박스 모델 (리셋 없이도 단독으로 동작하도록) */
+    [class*="wos-"], [class*="wos-"]::before, [class*="wos-"]::after { box-sizing: border-box; }
+
+    :root {
+      color-scheme: dark;
+
+      /* --- Accent channels (data-accent 로 교체되는 RGB 채널) --- */
+      --wos-a1-rgb: 56, 189, 248;
+      --wos-a2-rgb: 103, 232, 249;
+      --wos-a3-rgb: 165, 243, 252;
+      --wos-a4-rgb: 59, 130, 246;
+      --wos-a5-rgb: 37, 99, 235;
+      --wos-a6-rgb: 45, 212, 191;
+      --wos-gradient-primary-hover: linear-gradient(135deg, #cffafe 0%, #67e8f9 45%, #3b82f6 100%);
+
+      /* --- Core Color & Cryo-Blade Palette --- */
+      --wos-bg: #02050b;
+      --wos-bg-elevated: rgba(9, 15, 28, 0.72);
+      --wos-fg: #f8fafc;
+      --wos-fg-sub: #cbd5e1;
+      --wos-fg-muted: #64748b;
+
+      /* --- Cryo-Mint to Electric-Cobalt Accents --- */
+      --wos-cryo-ice: rgb(var(--wos-a3-rgb));
+      --wos-cryo-mint: rgb(var(--wos-a2-rgb));
+      --wos-cryo-teal: rgb(var(--wos-a6-rgb));
+      --wos-cobalt: rgb(var(--wos-a4-rgb));
+      --wos-cobalt-deep: rgb(var(--wos-a5-rgb));
+      --wos-gradient-primary: linear-gradient(135deg, #a5f3fc 0%, #38bdf8 48%, #2563eb 100%);
+      --wos-gradient-surface: linear-gradient(165deg, rgba(255, 255, 255, 0.09) 0%, rgba(var(--wos-a1-rgb), 0.03) 45%, rgba(6, 11, 22, 0.82) 100%);
+
+      /* --- Specular Glass Tokens --- */
+      --wos-glass-bg: rgba(10, 17, 32, 0.66);
+      --wos-glass-bg-hover: rgba(15, 25, 46, 0.78);
+      --wos-glass-border: rgba(var(--wos-a3-rgb), 0.16);
+      --wos-glass-border-strong: rgba(var(--wos-a2-rgb), 0.42);
+      --wos-glass-highlight: inset 0 1px 0.5px rgba(255, 255, 255, 0.28), inset 0 -1px 0.5px rgba(var(--wos-a1-rgb), 0.10);
+      --wos-glass-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.78), 0 4px 16px rgba(0, 0, 0, 0.45);
+      --wos-glow-aura: 0 10px 32px -6px rgba(var(--wos-a1-rgb), 0.38), 0 0 18px rgba(var(--wos-a6-rgb), 0.22);
+      --wos-blur: blur(28px) saturate(190%);
+      --wos-focus-ring: 0 0 0 3px rgba(var(--wos-a2-rgb), 0.55);
+
+      /* --- Ultra-Smooth Spring & Fluid Curves --- */
+      --wos-spring-snappy: cubic-bezier(0.22, 1.32, 0.36, 1);
+      --wos-spring-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+      --wos-spring-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+
+      /* --- Radii --- */
+      --wos-r-pill: 9999px;
+      --wos-r-xl: 26px;
+      --wos-r-lg: 20px;
+      --wos-r-md: 14px;
+      --wos-r-sm: 10px;
+
+      /* --- Touch target (모바일 최소 터치 영역) --- */
+      --wos-touch: 44px;
+    }
+
+    /* Light Mode Support */
+    html[data-theme="light"] {
+      color-scheme: light;
+      --wos-bg: #f1f5f9;
+      --wos-bg-elevated: rgba(255, 255, 255, 0.82);
+      --wos-fg: #0f172a;
+      --wos-fg-sub: #334155;
+      --wos-fg-muted: #64748b;
+      --wos-glass-bg: rgba(255, 255, 255, 0.75);
+      --wos-glass-bg-hover: rgba(255, 255, 255, 0.92);
+      --wos-glass-border: rgba(15, 23, 42, 0.10);
+      --wos-glass-border-strong: rgba(var(--wos-a5-rgb), 0.38);
+      --wos-glass-highlight: inset 0 1px 0.5px rgba(255, 255, 255, 0.95), inset 0 -1px 0.5px rgba(15, 23, 42, 0.05);
+      --wos-glass-shadow: 0 18px 40px -12px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06);
+      --wos-gradient-surface: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.78) 100%);
+      --wos-focus-ring: 0 0 0 3px rgba(var(--wos-a5-rgb), 0.45);
+    }
+
+    /* ERIC1013 Heritage Aura Boost */
+    html[data-heritage="eric1013"]:not([data-theme="light"]) {
+      --wos-glass-border: rgba(var(--wos-a2-rgb), 0.24);
+      --wos-glass-border-strong: rgba(var(--wos-a3-rgb), 0.62);
+      --wos-glow-aura: 0 12px 36px -6px rgba(var(--wos-a1-rgb), 0.48), 0 0 22px rgba(var(--wos-a6-rgb), 0.30);
+    }
+
+    /* backdrop-filter 미지원 브라우저용 불투명 폴백 */
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      :root { --wos-glass-bg: rgba(10, 17, 32, 0.94); --wos-glass-bg-hover: rgba(15, 25, 46, 0.97); }
+      html[data-theme="light"] { --wos-glass-bg: rgba(255, 255, 255, 0.96); --wos-glass-bg-hover: #fff; }
+    }
+
+    /* Accent Presets (html[data-accent="..."]) — 기본값은 cryo */
+    html[data-accent="violet"] {
+      --wos-a1-rgb: 167, 139, 250; --wos-a2-rgb: 196, 181, 253; --wos-a3-rgb: 221, 214, 254;
+      --wos-a4-rgb: 139, 92, 246;  --wos-a5-rgb: 109, 40, 217;  --wos-a6-rgb: 232, 121, 249;
+      --wos-gradient-primary: linear-gradient(135deg, #ddd6fe 0%, #a78bfa 48%, #7c3aed 100%);
+      --wos-gradient-primary-hover: linear-gradient(135deg, #ede9fe 0%, #c4b5fd 45%, #8b5cf6 100%);
+    }
+    html[data-accent="rose"] {
+      --wos-a1-rgb: 251, 113, 133; --wos-a2-rgb: 253, 164, 175; --wos-a3-rgb: 254, 205, 211;
+      --wos-a4-rgb: 244, 63, 94;   --wos-a5-rgb: 190, 18, 60;   --wos-a6-rgb: 251, 146, 60;
+      --wos-gradient-primary: linear-gradient(135deg, #fecdd3 0%, #fb7185 48%, #e11d48 100%);
+      --wos-gradient-primary-hover: linear-gradient(135deg, #ffe4e6 0%, #fda4af 45%, #f43f5e 100%);
+    }
+    html[data-accent="amber"] {
+      --wos-a1-rgb: 251, 191, 36;  --wos-a2-rgb: 252, 211, 77;  --wos-a3-rgb: 253, 230, 138;
+      --wos-a4-rgb: 245, 158, 11;  --wos-a5-rgb: 180, 83, 9;    --wos-a6-rgb: 253, 186, 116;
+      --wos-gradient-primary: linear-gradient(135deg, #fde68a 0%, #fbbf24 48%, #d97706 100%);
+      --wos-gradient-primary-hover: linear-gradient(135deg, #fef3c7 0%, #fcd34d 45%, #f59e0b 100%);
+    }
+    html[data-accent="emerald"] {
+      --wos-a1-rgb: 52, 211, 153;  --wos-a2-rgb: 110, 231, 183; --wos-a3-rgb: 167, 243, 208;
+      --wos-a4-rgb: 16, 185, 129;  --wos-a5-rgb: 4, 120, 87;    --wos-a6-rgb: 45, 212, 191;
+      --wos-gradient-primary: linear-gradient(135deg, #a7f3d0 0%, #34d399 48%, #059669 100%);
+      --wos-gradient-primary-hover: linear-gradient(135deg, #d1fae5 0%, #6ee7b7 45%, #10b981 100%);
+    }
+    /* View Transitions API Circular Wave */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    /* 접근성: 키보드 포커스 링 (마우스 클릭엔 표시 안 됨) */
+    .wos-btn:focus-visible,
+    .wos-seg:focus-visible,
+    .wos-seg button:focus-visible,
+    .wos-tabbar:focus-visible,
+    .wos-tab-item:focus-visible,
+    .wos-sbtn:focus-within,
+    .wos-switch:focus-visible,
+    .wos-slider:focus-visible,
+    .wos-popover button:focus-visible {
+      outline: none;
+      box-shadow: var(--wos-focus-ring), var(--wos-glass-highlight);
+    }
+
+    /* ============================================================================
+       1. GLASS SURFACES & BENTO CARDS (.wos-glass, .wos-card)
+       ============================================================================ */
+    .wos-glass,
+    .wos-card {
+      position: relative;
+      background: var(--wos-gradient-surface), var(--wos-glass-bg);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-xl);
+      box-shadow: var(--wos-glass-highlight), var(--wos-glass-shadow);
+      color: var(--wos-fg);
+      transition:
+        transform 0.48s var(--wos-spring-smooth),
+        border-color 0.35s var(--wos-spring-smooth),
+        box-shadow 0.48s var(--wos-spring-smooth),
+        background 0.35s ease;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* Cursor-Tracking Specular Spotlight Overlay */
+    .wos-glass::before,
+    .wos-card::before,
+    .wos-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        380px circle at var(--mx, 50%) var(--my, 0%),
+        rgba(var(--wos-a3-rgb), 0.14),
+        rgba(var(--wos-a4-rgb), 0.05) 40%,
+        transparent 75%
+      );
+      opacity: 0;
+      transition: opacity 0.38s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* 터치 기기에선 hover가 "눌린 채 고정"되므로 :active 로 대체 */
+    .wos-btn:active::before { opacity: 1; }
+
+    /* 45° Cryo-Blade Chamfer Corner Accent */
+    .wos-chamfer::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(225deg, rgba(var(--wos-a2-rgb), 0.55) 0%, rgba(var(--wos-a4-rgb), 0.18) 45%, transparent 52%);
+      pointer-events: none;
+      opacity: 0.55;
+      transition: opacity 0.35s ease, transform 0.35s var(--wos-spring-snappy);
+    }
+
+    /* Hover 효과는 실제 마우스(hover 지원 기기)에서만 */
+    @media (hover: hover) and (pointer: fine) {
+      .wos-glass:hover::before,
+      .wos-card:hover::before,
+      .wos-btn:hover::before { opacity: 1; }
+
+      .wos-card:hover {
+        border-color: var(--wos-glass-border-strong);
+        box-shadow:
+          var(--wos-glass-highlight),
+          var(--wos-glass-shadow),
+          0 0 28px rgba(var(--wos-a1-rgb), 0.15);
+      }
+      .wos-chamfer:hover::after { opacity: 1; transform: scale(1.12); }
+    }
+
+    /* ============================================================================
+       2. BUTTON SYSTEM (.wos-btn & Variants)
+       ============================================================================ */
+    .wos-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: var(--wos-touch);
+      padding: 11px 20px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      color: var(--wos-fg);
+      background: var(--wos-glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-md);
+      box-shadow:
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.24),
+        0 8px 20px -6px rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      text-decoration: none;
+      overflow: hidden;
+      isolation: isolate;
+      transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1);
+      transition:
+        transform 0.42s var(--wos-spring-snappy),
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.38s var(--wos-spring-smooth),
+        color 0.25s ease;
+    }
+    .wos-btn > * { position: relative; z-index: 1; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .wos-btn:hover {
+        /* 위치·크기는 고정 (클릭 대상이 움직이지 않도록) — 빛과 테두리로만 반응 */
+        background: var(--wos-glass-bg-hover);
+        border-color: var(--wos-glass-border-strong);
+        box-shadow:
+          inset 0 1px 1px rgba(255, 255, 255, 0.38),
+          0 14px 28px -8px rgba(0, 0, 0, 0.58),
+          0 0 20px rgba(var(--wos-a1-rgb), 0.20);
+      }
+    }
+
+      .wos-btn:active {
+      transform: translate3d(0, 0, 0) scale(0.97) !important;
+      transition-duration: 0.1s;
+    }
+    .wos-btn[disabled], .wos-btn[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+
+    /* Variant 1: Cryo-Blade Primary Button */
+    .wos-btn-primary {
+      color: #020617 !important;
+      font-weight: 800;
+      background: var(--wos-gradient-primary);
+      border: 1px solid rgba(207, 250, 254, 0.72);
+      box-shadow:
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.78),
+        inset 0 -2px 4px rgba(29, 78, 216, 0.45),
+        var(--wos-glow-aura);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .wos-btn-primary:hover {
+        background: var(--wos-gradient-primary-hover);
+        border-color: #ffffff;
+        box-shadow:
+          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.92),
+          0 16px 38px -6px rgba(var(--wos-a1-rgb), 0.58),
+          0 0 26px rgba(var(--wos-a2-rgb), 0.42);
+      }
+    }
+
+    /* Variant 2: Heritage Aura Neon Button */
+    .wos-btn-aura {
+      color: var(--wos-cryo-ice);
+      background: linear-gradient(135deg, rgba(var(--wos-a6-rgb), 0.16) 0%, rgba(var(--wos-a1-rgb), 0.22) 52%, rgba(29, 78, 216, 0.28) 100%);
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.45);
+      box-shadow:
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.32),
+        0 8px 24px -6px rgba(var(--wos-a1-rgb), 0.30);
+    }
+    html[data-theme="light"] .wos-btn-aura {
+      color: rgb(var(--wos-a5-rgb));
+      border-color: rgba(2, 132, 199, 0.35);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .wos-btn-aura:hover {
+        border-color: var(--wos-cryo-mint);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.48), var(--wos-glow-aura);
+      }
+    }
+
+    /* Variant 3: Chamfered Monolith Blade Button */
+    .wos-btn-blade {
+      border-radius: 12px;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.96));
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.36);
+      color: #e0f2fe;
+    }
+
+    /* Variant 4: Pill & Icon Buttons */
+    .wos-btn-pill { border-radius: var(--wos-r-pill); }
+    .wos-btn-sm { padding: 7px 14px; font-size: 12px; border-radius: var(--wos-r-sm); min-height: 36px; }
+    .wos-btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 16px; }
+    .wos-btn-icon {
+      width: var(--wos-touch);
+      height: var(--wos-touch);
+      padding: 0;
+      border-radius: var(--wos-r-pill);
+    }
+    /* 터치 기기: 작은 버튼도 44px 터치 영역 확보 */
+    @media (pointer: coarse) {
+      .wos-btn-sm { min-height: var(--wos-touch); }
+    }
+
+    /* Touch / Click Ripple Wave */
+    .wos-ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: radial-gradient(circle, rgba(var(--wos-a3-rgb), 0.45) 0%, rgba(var(--wos-a1-rgb), 0.15) 60%, transparent 75%);
+      pointer-events: none;
+      animation: wosRippleAnim 0.65s var(--wos-spring-smooth) forwards;
+      z-index: 0;
+    }
+    @keyframes wosRippleAnim {
+      to { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* ============================================================================
+       3. SMOOTH GLASS SEGMENTED CONTROL (.wos-seg)
+       ============================================================================ */
+    .wos-seg {
+      position: relative;
+      display: inline-grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      align-items: center;
+      max-width: 100%;
+      padding: 4px;
+      background: var(--wos-glass-bg);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-pill);
+      box-shadow: var(--wos-glass-highlight), 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: pan-y;
+    }
+    .wos-seg-pill {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 0;
+      border-radius: var(--wos-r-pill);
+      background: linear-gradient(180deg, rgba(var(--wos-a3-rgb), 0.22), rgba(var(--wos-a4-rgb), 0.18));
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.45);
+      box-shadow:
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.42),
+        0 4px 14px rgba(var(--wos-a1-rgb), 0.24);
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+      transition:
+        transform 0.46s var(--wos-spring-snappy),
+        scale 0.35s var(--wos-spring-snappy),
+        background 0.3s ease;
+    }
+    .wos-seg-pill.drag { transition: scale 0.25s var(--wos-spring-snappy), background 0.25s ease; }
+    .wos-seg-pill.press {
+      scale: 1.04 1.08;
+      background: linear-gradient(180deg, rgba(var(--wos-a3-rgb), 0.32), rgba(var(--wos-a4-rgb), 0.26));
+    }
+    .wos-seg button {
+      position: relative;
+      z-index: 1;
+      min-height: 36px;
+      border: 0;
+      background: none;
+      color: var(--wos-fg-sub);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: var(--wos-r-pill);
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+    .wos-seg button.active {
+      color: var(--wos-fg);
+      text-shadow: 0 0 14px rgba(var(--wos-a2-rgb), 0.45);
+    }
+
+    /* ============================================================================
+       4. CO-LINEAR FLOATING TAB BAR + MORPHING SEARCH (.wos-tabwrap)
+       ============================================================================ */
+    .wos-tabwrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: min(94vw, 460px);
+      height: 54px;
+      position: relative;
+      transition: height 0.42s var(--wos-spring-fluid), transform 0.42s var(--wos-spring-fluid);
+    }
+    .wos-tabbar {
+      position: relative;
+      flex: 1 1 0%;
+      min-width: 0;
+      height: 54px;
+      display: grid;
+      grid-template-columns: repeat(var(--tab-count, 4), minmax(0, 1fr));
+      align-items: center;
+      padding: 4px;
+      background: var(--wos-glass-bg);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-pill);
+      box-shadow: var(--wos-glass-highlight), var(--wos-glass-shadow);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: pan-y;
+      overflow: hidden;
+      transition:
+        flex 0.45s var(--wos-spring-fluid),
+        height 0.42s var(--wos-spring-fluid),
+        opacity 0.3s ease,
+        transform 0.45s var(--wos-spring-fluid),
+        padding 0.4s ease,
+        border-width 0.3s ease;
+    }
+    .wos-tab-ind {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 0;
+      border-radius: var(--wos-r-pill);
+      background: linear-gradient(180deg, rgba(var(--wos-a2-rgb), 0.22), rgba(var(--wos-a5-rgb), 0.20));
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.42);
+      box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.35), 0 4px 16px rgba(var(--wos-a1-rgb), 0.22);
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+      transition:
+        transform 0.46s var(--wos-spring-snappy),
+        scale 0.35s var(--wos-spring-snappy);
+    }
+    .wos-tab-ind.drag { transition: scale 0.25s var(--wos-spring-snappy); }
+    .wos-tab-ind.press { scale: 1.04 1.08; }
+    .wos-tab-item {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      min-width: 0;
+      border: 0;
+      background: none;
+      color: var(--wos-fg-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-family: inherit;
+      font-size: 10.5px;
+      font-weight: 700;
+      border-radius: var(--wos-r-pill);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.25s ease, transform 0.3s var(--wos-spring-snappy);
+    }
+    .wos-tab-item > span:not(.ico) {
+      max-width: 100%;
+      max-height: 1.4em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: opacity 0.25s ease, max-height 0.42s var(--wos-spring-fluid);
+    }
+    .wos-tab-item .ico {
+      font-size: 15px;
+      line-height: 1;
+      transition: transform 0.3s var(--wos-spring-snappy);
+    }
+    .wos-tab-item.active { color: var(--wos-fg); }
+    .wos-tab-item.active .ico {
+      transform: translateY(-1px) scale(1.08);
+      filter: drop-shadow(0 0 8px rgba(var(--wos-a2-rgb), 0.55));
+    }
+
+    /* Co-Linear Right Search Pill Button (.wos-sbtn) */
+    .wos-sbtn {
+      position: relative;
+      flex: 0 0 54px;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 17px;
+      background: var(--wos-glass-bg);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-pill);
+      box-shadow: var(--wos-glass-highlight), var(--wos-glass-shadow);
+      color: var(--wos-fg);
+      cursor: pointer;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        flex 0.45s var(--wos-spring-fluid),
+        width 0.45s var(--wos-spring-fluid),
+        height 0.42s var(--wos-spring-fluid),
+        border-color 0.3s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .wos-sbtn:hover { border-color: var(--wos-glass-border-strong); }
+    }
+    .wos-sbtn svg {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+    }
+    .wos-sbtn input {
+      border: 0;
+      outline: 0;
+      background: none;
+      color: var(--wos-fg);
+      font-family: inherit;
+      font-size: 16px; /* iOS Safari 포커스 시 자동 확대 방지 (16px 미만이면 줌됨) */
+      font-weight: 600;
+      width: 100%;
+      min-width: 0;
+      margin-left: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .wos-sbtn input::placeholder { color: var(--wos-fg-muted); }
+
+    /* Search Open State (.wos-tabwrap.s) */
+    .wos-tabwrap.s .wos-tabbar {
+      flex: 0 0 0px;
+      padding: 0;
+      border-width: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.9);
+    }
+    .wos-tabwrap.s .wos-sbtn {
+      flex: 1 1 100%;
+      width: 100%;
+      border-color: var(--wos-glass-border-strong);
+    }
+    .wos-tabwrap.s .wos-sbtn input { opacity: 1; pointer-events: auto; }
+
+    /* Scroll Compact State (.wos-tabwrap.min) */
+    .wos-tabwrap.min { height: 46px; }
+    .wos-tabwrap.min .wos-tabbar { height: 46px; }
+    .wos-tabwrap.min .wos-sbtn { flex-basis: 46px; width: 46px; height: 46px; padding: 0 13px; }
+    .wos-tabwrap.min .wos-tab-item { gap: 0; }
+    .wos-tabwrap.min .wos-tab-item > span:not(.ico) { opacity: 0; max-height: 0; }
+
+    /* ============================================================================
+       5. TACTILE GLASS SWITCH (.wos-switch) & FLUID SLIDER (.wos-slider)
+       ============================================================================ */
+    .wos-switch {
+      --p: 1;
+      position: relative;
+      flex: 0 0 auto;
+      width: 58px;
+      height: 32px;
+      border-radius: var(--wos-r-pill);
+      background: color-mix(in srgb, rgb(var(--wos-a2-rgb)) calc(var(--p) * 78%), rgba(100, 116, 139, 0.32));
+      border: 1px solid var(--wos-glass-border-strong);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(var(--wos-a1-rgb), calc(var(--p) * 0.28));
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: pan-y;
+      transition: background 0.28s ease, box-shadow 0.28s ease;
+    }
+    /* 터치 영역 확장 (시각 크기는 그대로) */
+    .wos-switch::after, .wos-slider::after {
+      content: ''; position: absolute; inset: -8px -6px;
+    }
+    .wos-switch-knob {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--wos-r-pill);
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), inset 0 1px 0.5px #ffffff;
+      will-change: transform;
+      transition:
+        transform 0.42s var(--wos-spring-snappy),
+        scale 0.28s var(--wos-spring-snappy),
+        background 0.25s ease;
+    }
+    .wos-switch-knob.drag { transition: scale 0.22s var(--wos-spring-snappy); }
+    .wos-switch-knob.press {
+      scale: 1.18 1.08;
+      background: rgba(240, 249, 255, 0.92);
+    }
+
+    /* Fluid Precision Slider */
+    .wos-slider {
+      position: relative;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: pan-y;
+      border-radius: var(--wos-r-pill);
+    }
+    .wos-slider-rail {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--wos-r-pill);
+      background: rgba(148, 163, 184, 0.22);
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+    .wos-slider-fill {
+      height: 100%;
+      width: 65%;
+      background: var(--wos-gradient-primary);
+      border-radius: var(--wos-r-pill);
+      box-shadow: 0 0 14px rgba(var(--wos-a1-rgb), 0.55);
+    }
+    .wos-slider-knob {
+      position: absolute;
+      top: 50%;
+      left: calc(14px + (100% - 28px) * var(--v, 0.65));
+      width: 26px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      border-radius: var(--wos-r-pill);
+      background: #ffffff;
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.65);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.42);
+      transition: transform 0.28s var(--wos-spring-snappy), background 0.25s ease, box-shadow 0.25s ease;
+    }
+    .wos-slider-knob.dn {
+      transform: translate(-50%, -50%) scale(1.26, 1.14);
+      background: rgba(224, 242, 254, 0.85);
+      box-shadow: 0 0 20px rgba(var(--wos-a1-rgb), 0.65);
+    }
+
+    /* ============================================================================
+       6. GLASS INPUT, BADGE & POPOVER MENU
+       ============================================================================ */
+    .wos-input {
+      width: 100%;
+      min-height: var(--wos-touch);
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 16px; /* iOS 자동 확대 방지 */
+      color: var(--wos-fg);
+      background: var(--wos-glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--wos-glass-border);
+      border-radius: var(--wos-r-md);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+      outline: none;
+      transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s var(--wos-spring-smooth);
+    }
+    .wos-input::placeholder { color: var(--wos-fg-muted); }
+    .wos-input:focus {
+      border-color: var(--wos-cryo-mint);
+      box-shadow: 0 0 0 3px rgba(var(--wos-a1-rgb), 0.18), var(--wos-glass-highlight);
+    }
+
+    .wos-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--wos-r-pill);
+      color: var(--wos-cryo-ice);
+      background: rgba(var(--wos-a1-rgb), 0.12);
+      border: 1px solid rgba(var(--wos-a2-rgb), 0.34);
+      box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.22);
+    }
+    html[data-theme="light"] .wos-badge { color: rgb(var(--wos-a5-rgb)); background: rgba(2, 132, 199, 0.10); }
+
+    /* Morphing Popover Menu */
+    .wos-popover-wrap { position: relative; display: inline-block; }
+    .wos-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(240px, calc(100vw - 32px));
+      padding: 6px;
+      background: var(--wos-glass-bg-hover);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border-strong);
+      border-radius: 18px;
+      box-shadow: var(--wos-glass-highlight), var(--wos-glass-shadow);
+      transform-origin: top right;
+      transform: scale(0.82) translateY(var(--ty, -8px));
+      opacity: 0;
+      visibility: hidden; /* 닫힌 상태에서 키보드 포커스 차단 */
+      pointer-events: none;
+      transition: transform 0.38s var(--wos-spring-snappy), opacity 0.25s ease, visibility 0s linear 0.38s;
+      z-index: 100;
+    }
+    /* 팝오버가 카드의 overflow 에 잘리지 않도록 body 로 옮겨 fixed 로 배치 (JS가 .portal 부여) */
+    .wos-popover.portal { position: fixed; top: 0; left: 0; right: auto; }
+    .wos-popover.open {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition-delay: 0s;
+    }
+    .wos-popover button {
+      width: 100%;
+      min-height: var(--wos-touch);
+      border: 0;
+      background: none;
+      color: var(--wos-fg);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .wos-popover button:hover { background: rgba(var(--wos-a1-rgb), 0.16); color: var(--wos-cryo-ice); }
+    }
+    .wos-popover button:active { background: rgba(var(--wos-a1-rgb), 0.22); }
+
+    /* ============================================================================
+       7. 모션 최소화 설정 존중 (접근성 · 배터리)
+       ============================================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      .wos-glass, .wos-card, .wos-btn, .wos-seg-pill, .wos-tab-ind, .wos-tabwrap, .wos-tabbar, .wos-sbtn,
+      .wos-switch-knob, .wos-slider-knob, .wos-popover, .wos-chamfer::after, .wos-tab-item, .wos-tab-item .ico {
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+      }
+      .wos-ripple { animation: none; display: none; }
+    }
+
+    /* ============================================================================
+       8. OVERLAYS — MODAL & BOTTOM SHEET (.wos-overlay, .wos-modal, .wos-sheet)
+       - 바깥 클릭/ESC/닫기 버튼으로 닫힘, 시트는 핸들을 아래로 드래그해서 닫기
+       ============================================================================ */
+    .wos-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      background: rgba(2, 6, 14, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      visibility: hidden;
+      overscroll-behavior: contain;
+      transition: opacity 0.3s ease, visibility 0s linear 0.5s;
+    }
+    html[data-theme="light"] .wos-overlay { background: rgba(15, 23, 42, 0.32); }
+    .wos-overlay.open { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+    .wos-modal {
+      width: min(460px, 100%);
+      max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 32px);
+      overflow: auto;
+      padding: 26px;
+      opacity: 0;
+      transform: translateY(18px) scale(0.92);
+      transition: transform 0.5s var(--wos-spring-snappy), opacity 0.3s ease;
+    }
+    .wos-overlay.open .wos-modal { opacity: 1; transform: none; }
+    .wos-modal-title { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .wos-modal-body { font-size: 13.5px; color: var(--wos-fg-sub); display: flex; flex-direction: column; gap: 12px; }
+    .wos-modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+
+    .wos-overlay-sheet { align-items: flex-end; padding-bottom: 0; }
+    .wos-sheet {
+      width: min(560px, 100%);
+      max-height: 88vh;
+      max-height: 88dvh;
+      overflow: auto;
+      padding: 0 22px calc(24px + env(safe-area-inset-bottom));
+      border-radius: var(--wos-r-xl) var(--wos-r-xl) 0 0;
+      border-bottom: 0;
+      transform: translateY(100%);
+      transition: transform 0.55s var(--wos-spring-fluid);
+    }
+    .wos-overlay.open .wos-sheet { transform: translateY(var(--dy, 0px)); }
+    .wos-sheet.dragging { transition: none; }
+    .wos-sheet-grab {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0 14px;
+      margin: 0 -22px;
+      cursor: grab;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wos-sheet-grab::before {
+      content: '';
+      width: 40px;
+      height: 5px;
+      border-radius: var(--wos-r-pill);
+      background: var(--wos-fg-muted);
+      opacity: 0.55;
+      transition: width 0.25s var(--wos-spring-snappy), opacity 0.2s ease;
+    }
+    .wos-sheet.dragging .wos-sheet-grab { cursor: grabbing; }
+    .wos-sheet.dragging .wos-sheet-grab::before { width: 56px; opacity: 0.9; }
+    body.wos-scroll-lock { overflow: hidden; }
+    html:has(body.wos-scroll-lock) { overflow: hidden; }
+    .wos-modal:focus, .wos-sheet:focus { outline: none; }
+
+    /* ============================================================================
+       9. TOAST STACK (.wos-toasts / .wos-toast) — WaveOSUI.toast(msg, opts)
+       ============================================================================ */
+    .wos-toasts {
+      position: fixed;
+      z-index: 1100;
+      right: max(20px, env(safe-area-inset-right));
+      bottom: calc(var(--wos-toast-bottom, 20px) + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .wos-toast {
+      --tc: rgb(var(--wos-a2-rgb));
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: min(380px, calc(100vw - 32px));
+      padding: 13px 18px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 700;
+      pointer-events: auto;
+      cursor: pointer;
+      animation: wosToastIn 0.5s var(--wos-spring-snappy) both;
+    }
+    .wos-toast.out { animation: wosToastOut 0.3s ease forwards; }
+    .wos-toast-ico { flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; color: #020617; background: var(--tc); font-size: 12px; font-weight: 900; }
+    .wos-toast-msg { min-width: 0; line-height: 1.4; }
+    .wos-toast-bar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: var(--tc);
+      transform-origin: left center;
+      animation: wosToastBar var(--dur, 3000ms) linear forwards;
+      opacity: 0.8;
+    }
+    .wos-toast:hover .wos-toast-bar, .wos-toast:focus-within .wos-toast-bar { animation-play-state: paused; }
+    .wos-toast[data-type="success"] { --tc: rgb(52, 211, 153); }
+    .wos-toast[data-type="warn"]    { --tc: rgb(251, 191, 36); }
+    .wos-toast[data-type="error"]   { --tc: rgb(251, 113, 133); }
+    @keyframes wosToastIn  { from { opacity: 0; transform: translateY(20px) scale(0.92); } to { opacity: 1; transform: none; } }
+    @keyframes wosToastOut { to { opacity: 0; transform: translateX(24px) scale(0.96); } }
+    @keyframes wosToastBar { to { transform: scaleX(0); } }
+    @media (max-width: 640px) {
+      .wos-toasts { left: max(14px, env(safe-area-inset-left)); right: max(14px, env(safe-area-inset-right)); bottom: calc(var(--wos-toast-bottom, 14px) + env(safe-area-inset-bottom)); align-items: stretch; }
+      .wos-toast { max-width: none; }
+    }
+
+    /* ============================================================================
+       10. TOOLTIP (data-wos-tip="텍스트" [data-wos-tip-pos="top|bottom"])
+       ============================================================================ */
+    .wos-tooltip {
+      position: fixed;
+      left: 0; top: 0;
+      z-index: 1200;
+      max-width: 240px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--wos-fg);
+      background: var(--wos-glass-bg-hover);
+      backdrop-filter: var(--wos-blur);
+      -webkit-backdrop-filter: var(--wos-blur);
+      border: 1px solid var(--wos-glass-border-strong);
+      border-radius: 10px;
+      box-shadow: var(--wos-glass-highlight), 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(var(--ty, 4px)) scale(0.94);
+      transition: opacity 0.18s ease, transform 0.3s var(--wos-spring-snappy);
+    }
+    .wos-tooltip.show { opacity: 1; transform: none; }
+
+    /* ============================================================================
+       11. PROGRESS BAR / RING & SKELETON SHIMMER
+       ============================================================================ */
+    } /* @property 는 전역 규칙이므로 레이어 밖에 선언 */
+    @property --wos-ring-v { syntax: '<number>'; inherits: false; initial-value: 0; }
+    @layer wos {
+    .wos-progress {
+      --v: 0;
+      height: 8px;
+      border-radius: var(--wos-r-pill);
+      background: rgba(148, 163, 184, 0.22);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+    .wos-progress-bar {
+      height: 100%;
+      width: calc(var(--v) * 100%);
+      border-radius: var(--wos-r-pill);
+      background: var(--wos-gradient-primary);
+      box-shadow: 0 0 14px rgba(var(--wos-a1-rgb), 0.55);
+      transition: width 0.6s var(--wos-spring-smooth);
+    }
+    .wos-progress.indet .wos-progress-bar { width: 38%; animation: wosIndet 1.5s var(--wos-spring-fluid) infinite; transition: none; }
+    @keyframes wosIndet { from { transform: translateX(-110%); } to { transform: translateX(290%); } }
+
+    .wos-ring {
+      --wos-ring-v: 0;
+      position: relative;
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      transition: --wos-ring-v 0.7s var(--wos-spring-smooth);
+    }
+    .wos-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(rgb(var(--wos-a2-rgb)) calc(var(--wos-ring-v) * 360deg), rgba(148, 163, 184, 0.22) 0);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+              mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+      filter: drop-shadow(0 0 6px rgba(var(--wos-a1-rgb), 0.5));
+    }
+
+    .wos-skeleton {
+      display: block;
+      height: 14px;
+      border-radius: 8px;
+      background: linear-gradient(100deg, rgba(148, 163, 184, 0.14) 30%, rgba(var(--wos-a3-rgb), 0.28) 50%, rgba(148, 163, 184, 0.14) 70%) 0 0 / 220% 100%;
+      animation: wosShimmer 1.4s linear infinite;
+    }
+    .wos-skeleton-circle { border-radius: 50%; flex: 0 0 auto; }
+    @keyframes wosShimmer { from { background-position: 130% 0; } to { background-position: -90% 0; } }
+
+    /* ============================================================================
+       12. ACCENT SWATCHES (.wos-swatches) — WaveOSUI.setAccent(name)
+       ============================================================================ */
+    .wos-swatches { display: flex; flex-wrap: wrap; gap: 14px; }
+    .wos-swatch {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: var(--sw);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 6px 14px -6px var(--sw-c);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.45s var(--wos-spring-snappy), box-shadow 0.35s ease;
+    }
+    .wos-swatch:focus-visible { outline: none; box-shadow: var(--wos-focus-ring); }
+    .wos-swatch:active { transform: scale(0.9); }
+    .wos-swatch[aria-checked="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 3px var(--wos-bg), 0 0 0 5px var(--sw-c), 0 10px 24px -4px var(--sw-c);
+    }
+    .wos-swatch[aria-checked="true"]::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #020617; font-size: 16px; font-weight: 900; }
+
+    /* ============================================================================
+       13. FORM CONTROLS — CHECKBOX · RADIO · TEXTAREA · SELECT · FIELD STATE
+       - 실제 <input> 을 그대로 사용 (키보드·스크린리더·폼 전송 100% 네이티브)
+       ============================================================================ */
+    .wos-check, .wos-radio {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: var(--wos-touch);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--wos-fg);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wos-check input, .wos-radio input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .wos-check-box, .wos-radio-dot {
+      position: relative;
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      background: var(--wos-glass-bg);
+      border: 1px solid var(--wos-glass-border-strong);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+      transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.35s var(--wos-spring-smooth),
+        transform 0.4s var(--wos-spring-snappy);
+    }
+    .wos-check-box { border-radius: 8px; }
+    .wos-radio-dot { border-radius: 50%; }
+    .wos-check-box svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #020617;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset 0.38s var(--wos-spring-smooth) 0.05s;
+    }
+    .wos-check-box::after {
+      content: '';
+      position: absolute;
+      left: 6px; right: 6px; top: 50%;
+      height: 3px;
+      margin-top: -1.5px;
+      border-radius: 2px;
+      background: #020617;
+      transform: scaleX(0);
+      transition: transform 0.3s var(--wos-spring-snappy);
+    }
+    .wos-radio-dot::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #020617;
+      transform: scale(0);
+      transition: transform 0.4s var(--wos-spring-snappy);
+    }
+    .wos-check input:checked ~ .wos-check-box,
+    .wos-check input:indeterminate ~ .wos-check-box,
+    .wos-radio input:checked ~ .wos-radio-dot {
+      background: var(--wos-gradient-primary);
+      border-color: rgba(var(--wos-a3-rgb), 0.7);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 4px 14px -2px rgba(var(--wos-a1-rgb), 0.55);
+    }
+    .wos-check input:checked ~ .wos-check-box svg { stroke-dashoffset: 0; }
+    .wos-check input:indeterminate ~ .wos-check-box svg { stroke-dashoffset: 1; }
+    .wos-check input:indeterminate ~ .wos-check-box::after { transform: scaleX(1); }
+    .wos-radio input:checked ~ .wos-radio-dot::after { transform: scale(1); }
+    .wos-check input:active ~ .wos-check-box,
+    .wos-radio input:active ~ .wos-radio-dot { transform: scale(0.86); }
+    .wos-check input:focus-visible ~ .wos-check-box,
+    .wos-radio input:focus-visible ~ .wos-radio-dot { box-shadow: var(--wos-focus-ring); }
+    .wos-check input:disabled, .wos-radio input:disabled { cursor: not-allowed; }
+    .wos-check:has(input:disabled), .wos-radio:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+    @media (hover: hover) and (pointer: fine) {
+      .wos-check:hover .wos-check-box, .wos-radio:hover .wos-radio-dot { border-color: var(--wos-cryo-mint); }
+    }
+
+    .wos-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .wos-label { font-size: 12.5px; font-weight: 700; color: var(--wos-fg-sub); }
+    .wos-hint {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 1.3em;
+      font-size: 12px;
+      color: var(--wos-fg-muted);
+      transition: color 0.25s ease;
+    }
+    .wos-field[data-state="error"] .wos-hint { color: rgb(251, 113, 133); }
+    .wos-input[aria-invalid="true"] { border-color: rgb(251, 113, 133); box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.16); }
+    .wos-input.shake { animation: wosShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+    @keyframes wosShake {
+      10%, 90% { transform: translateX(-1px); }
+      20%, 80% { transform: translateX(2px); }
+      30%, 50%, 70% { transform: translateX(-4px); }
+      40%, 60% { transform: translateX(4px); }
+    }
+    textarea.wos-input { display: block; min-height: 96px; line-height: 1.5; resize: vertical; }
+    textarea.wos-input[data-wos-autogrow] { resize: none; overflow: hidden; }
+
+    .wos-select-wrap { position: relative; }
+    .wos-select { appearance: none; -webkit-appearance: none; padding-right: 42px; cursor: pointer; text-overflow: ellipsis; }
+    .wos-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 17px;
+      top: calc(50% - 4px);
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--wos-fg-sub);
+      border-bottom: 2px solid var(--wos-fg-sub);
+      transform: translateY(-2px) rotate(45deg);
+      pointer-events: none;
+      transition: transform 0.4s var(--wos-spring-snappy), border-color 0.25s ease;
+    }
+    .wos-select-wrap:focus-within::after { transform: translateY(2px) rotate(225deg); border-color: var(--wos-cryo-mint); }
+    .wos-select option { background: #0a1120; color: #f8fafc; }
+    html[data-theme="light"] .wos-select option { background: #ffffff; color: #0f172a; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .wos-check-box, .wos-radio-dot, .wos-check-box svg, .wos-check-box::after, .wos-radio-dot::after, .wos-select-wrap::after { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+      .wos-input.shake { animation: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .wos-toast, .wos-toast.out { animation-duration: 0.01ms !important; }
+      .wos-overlay, .wos-modal, .wos-sheet, .wos-tooltip, .wos-progress-bar, .wos-ring, .wos-swatch { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+      .wos-skeleton, .wos-progress.indet .wos-progress-bar { animation: none; }
+    }
+
+    /* 저사양 모바일: blur 비용 줄이기 */
+    @media (max-width: 560px) {
+      :root { --wos-blur: blur(18px) saturate(170%); }
+    }
+    } /* /@layer wos */
+  </style>
+
+  <!-- ============================================================================
+       DEMO PAGE LAYOUT CSS (쇼케이스 페이지 레이아웃 전용)
+       ============================================================================ -->
+  <style>
+    @layer wos-reset { * { box-sizing: border-box; margin: 0; padding: 0; } }
+    @layer demo {
+    html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(900px 460px at 50% -6%, rgba(var(--wos-a1-rgb), 0.18), transparent 68%),
+        radial-gradient(700px 420px at 85% 20%, rgba(29, 78, 216, 0.14), transparent 70%),
+        var(--wos-bg);
+      background-attachment: fixed;
+      color: var(--wos-fg);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+      padding:
+        max(36px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        calc(120px + env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+      line-height: 1.55;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+      -webkit-font-smoothing: antialiased;
+    }
+    .kit-container {
+      max-width: 1060px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .kit-header {
+      padding: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .kit-title-group { flex: 1 1 340px; min-width: 0; }
+    .kit-title-group h1 {
+      font-size: clamp(22px, 5vw, 34px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 55%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    html[data-theme="light"] .kit-title-group h1 {
+      background: linear-gradient(135deg, #0f172a 0%, #0284c7 65%, #2563eb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .kit-title-group p { color: var(--wos-fg-sub); font-size: 14px; margin-top: 6px; }
+    .kit-copy-bar { display: flex; flex-wrap: wrap; gap: 10px; }
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr));
+      gap: 20px;
+    }
+    .kit-section-card { padding: 26px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .kit-sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+    .kit-sec-head h2 { flex: 1 1 200px; min-width: 0; text-wrap: balance; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
+    .kit-sec-head .wos-btn { flex: 0 0 auto; white-space: nowrap; }
+    .kit-row > .wos-seg { flex: 1 1 260px; min-width: 0; }
+    .kit-sec-desc { text-wrap: pretty; font-size: 12.5px; color: var(--wos-fg-sub); }
+    .kit-sec-desc code { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; padding: 1px 5px; border-radius: 6px; background: rgba(var(--wos-a1-rgb), .12); }
+    .kit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .kit-toast {
+      position: fixed;
+      bottom: calc(28px + env(safe-area-inset-bottom));
+      right: max(28px, env(safe-area-inset-right));
+      max-width: calc(100vw - 40px);
+      padding: 14px 20px;
+      border-radius: 16px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      transform: translateY(24px) scale(0.94);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.38s var(--wos-spring-snappy), opacity 0.25s ease;
+    }
+    .kit-toast.show { transform: translateY(0) scale(1); opacity: 1; }
+
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    .kit-section-card, header.kit-header { scroll-margin-top: 20px; }
+
+    /* 하단 고정 독 (스크롤 방향에 따라 자동 컴팩트) */
+    .kit-dock {
+      position: fixed;
+      left: 50%;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 900;
+    }
+    :root { --wos-toast-bottom: 88px; }
+
+    /* 스크롤 리빌 (JS 사용 가능할 때만, 모션 최소화 시 제외) */
+    @media (prefers-reduced-motion: no-preference) {
+      html.js .kit-reveal:not(.in) { opacity: 0; }
+      html.js .kit-reveal.in { animation: kitReveal 0.75s var(--wos-spring-smooth) backwards; animation-delay: var(--d, 0ms); }
+    }
+    @keyframes kitReveal { from { opacity: 0; transform: translateY(26px) scale(0.98); } }
+
+    /* 토큰/문서 */
+    .kit-token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 10px; }
+    .kit-token { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 10px; border-radius: 12px; background: rgba(148, 163, 184, 0.08); border: 1px solid var(--wos-glass-border); font-size: 12px; }
+    .kit-token-sw { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--wos-glass-border-strong); }
+    .kit-token code { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .kit-code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(2, 6, 14, 0.55);
+      border: 1px solid var(--wos-glass-border);
+      color: #e2e8f0;
+      overflow-x: auto;
+      white-space: pre;
+      tab-size: 2;
+      -webkit-overflow-scrolling: touch;
+    }
+    html[data-theme="light"] .kit-code { background: rgba(15, 23, 42, 0.92); }
+    .kit-api { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .kit-api th, .kit-api td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--wos-glass-border); vertical-align: top; }
+    .kit-api th { color: var(--wos-fg-sub); font-weight: 700; }
+    .kit-api code { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; color: var(--wos-cryo-mint); white-space: nowrap; }
+    .kit-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .kit-form { display: flex; flex-direction: column; gap: 16px; }
+    .kit-choices { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+    .kit-pulse { animation: kitPulse 0.9s ease-out 2; }
+    @keyframes kitPulse { from { box-shadow: var(--wos-glass-highlight), 0 0 0 0 rgba(var(--wos-a1-rgb), 0.65); } to { box-shadow: var(--wos-glass-highlight), 0 0 0 20px rgba(var(--wos-a1-rgb), 0); } }
+
+    @media (max-width: 640px) {
+      body { padding-top: max(16px, env(safe-area-inset-top)); padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
+      .kit-container { gap: 18px; }
+      .kit-header { padding: 22px 18px; }
+      .kit-section-card { padding: 20px 16px; }
+      .kit-copy-bar { width: 100%; }
+      .kit-copy-bar .wos-btn:not(.wos-btn-icon) { flex: 1 1 140px; }
+      .kit-toast { left: 14px; right: 14px; bottom: calc(16px + env(safe-area-inset-bottom)); justify-content: center; }
+      .wos-seg { display: grid; width: 100%; }
+      .wos-seg button { padding: 8px 4px; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
+    }
+    } /* /@layer demo */
+  </style>
+</head>
+<body>
+  <div class="kit-container">
+    <!-- HEADER & ONE-CLICK COPY EXTRACTOR -->
+    <header class="wos-glass wos-chamfer kit-header">
+      <div class="kit-title-group">
+        <span class="wos-badge">⚡ WAVE OS 3.0 // STANDALONE UI ENGINE</span>
+        <h1>Cryo-Blade Glass & Smooth Button UI Kit</h1>
+        <p>홈페이지의 복잡한 콘텐츠를 모두 덜어내고, <b>글래스모피즘 표면 · 스페큘러 버튼 · 물리 스프링(glassDrag)</b>만 순수 추출해 고도화한 모듈입니다.</p>
+      </div>
+      <div class="kit-copy-bar">
+        <button type="button" class="wos-btn wos-btn-primary" id="copy-all-btn">
+          <span>📋 올인원(CSS+JS) 코드 복사</span>
+        </button>
+        <button type="button" class="wos-btn wos-btn-aura" id="copy-css-btn">
+          <span>🎨 Core CSS만 복사</span>
+        </button>
+        <button type="button" class="wos-btn" id="copy-js-btn">
+          <span>⚙️ Core JS만 복사</span>
+        </button>
+        <button type="button" class="wos-btn wos-btn-icon" id="kit-theme-btn" title="다크/라이트 파동 전환" aria-label="다크/라이트 테마 전환">🌙</button>
+        <a href="index.html" class="wos-btn wos-btn-sm">← 메인 홈으로</a>
+      </div>
+    </header>
+
+    <!-- COMPONENT GRID -->
+    <div class="kit-grid">
+      <!-- 1. BUTTONS -->
+      <section id="sec-buttons" class="wos-card wos-chamfer kit-section-card" data-snippet-id="snip-buttons">
+        <div class="kit-sec-head">
+          <h2>01. Tactile Glass & Cryo-Blade Buttons</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-buttons">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">마우스를 올리면 커서 위치를 따라 마이크로 스페큘러 광원이 흐르고, 클릭·터치 시 부드러운 스프링 탄성(<code>scale 0.955</code>)과 파동 리플이 작동합니다. 터치 기기에서는 눌렀을 때만 반응해 "고정된 호버" 현상이 없습니다.</p>
+        <div class="kit-row" id="snip-buttons">
+          <button type="button" class="wos-btn wos-btn-primary">⚡ Cryo Primary</button>
+          <button type="button" class="wos-btn wos-btn-aura">✦ Heritage Aura</button>
+          <button type="button" class="wos-btn">Liquid Glass</button>
+          <button type="button" class="wos-btn wos-btn-blade">45° Monolith Blade</button>
+          <button type="button" class="wos-btn wos-btn-pill wos-btn-sm">Pill Button</button>
+          <button type="button" class="wos-btn wos-btn-icon" aria-label="즐겨찾기">★</button>
+        </div>
+      </section>
+
+      <!-- 2. SEGMENTED CONTROL & POPOVER -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>02. Smooth Spring Segmented Control</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-seg">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">클릭뿐 아니라 좌우로 드래그(<code>glassDrag</code>)하면 물방울처럼 늘어나는 관성 필(Pill) 인디케이터와 팝오버 메뉴입니다. 키보드 ←/→ 도 지원합니다.</p>
+        <div class="kit-row" id="snip-seg">
+          <div class="wos-seg" data-wos-seg role="tablist" aria-label="시스템 선택">
+            <div class="wos-seg-pill"></div>
+            <button type="button" role="tab" class="active">All Systems</button>
+            <button type="button" role="tab">Cryo Glass</button>
+            <button type="button" role="tab">Physics</button>
+          </div>
+
+          <div class="wos-popover-wrap">
+            <button type="button" class="wos-btn wos-btn-icon" data-wos-popover-btn aria-label="메뉴 열기" aria-haspopup="true" aria-expanded="false">⋯</button>
+            <div class="wos-popover" role="menu">
+              <button type="button" role="menuitem" id="toggle-heritage-demo"><span>⚡ ERIC1013 아우라 토글</span><span>ON</span></button>
+              <button type="button" role="menuitem" id="popover-theme-btn"><span>🌗 다크 / 라이트 전환</span><span>⌘T</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. TACTILE SWITCH & FLUID SLIDER -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>03. Fluid Glass Switch & Precision Slider</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-controls">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">드래그 중 노브가 투명한 리퀴드 글래스로 변형되며 부드럽게 따라오는 스위치와 정밀 슬라이더입니다.</p>
+        <div id="snip-controls" style="display:flex;flex-direction:column;gap:16px;">
+          <div class="kit-row" style="justify-content:space-between;flex-wrap:nowrap;">
+            <span style="font-size:13.5px;font-weight:700;">Cryo-Mint Backlight Boost</span>
+            <div class="wos-switch" role="switch" tabindex="0" aria-label="Cryo-Mint Backlight Boost" aria-checked="true" data-wos-switch>
+              <div class="wos-switch-knob"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:4px;">
+              <span>Specular Refraction Intensity</span>
+              <b data-wos-slider-val>65%</b>
+            </div>
+            <div class="wos-slider" data-wos-slider role="slider" tabindex="0" aria-label="Specular Refraction Intensity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65">
+              <div class="wos-slider-rail"><div class="wos-slider-fill"></div></div>
+              <div class="wos-slider-knob"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. GLASS INPUT & SURFACE CARDS -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>04. Frosted Input & Micro-Specular Surface</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-input">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">포커스 시 은은한 시안 림 글로우가 퍼지는 글래스 인풋과 뱃지 조합입니다.</p>
+        <div id="snip-input" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="kit-row">
+            <span class="wos-badge">✦ SPECULAR 1PX</span>
+            <span class="wos-badge">45° CHAMFER</span>
+          </div>
+          <input type="text" class="wos-input" aria-label="프로젝트 이름 또는 명령어" placeholder="프로젝트 이름 또는 명령어를 입력하세요..." />
+        </div>
+      </section>
+    </div>
+
+    <!-- 5. CO-LINEAR FLOATING DOCK + MORPHING SEARCH BAR -->
+    <section class="wos-card wos-chamfer kit-section-card">
+      <div class="kit-sec-head">
+        <h2>05. Co-Linear Floating Glass Dock & Morphing Search Bar</h2>
+        <div class="kit-row">
+          <button type="button" class="wos-btn wos-btn-sm" id="demo-min-dock-btn">↕ 컴팩트 축소(46px) 테스트</button>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-dock">&lt;/&gt; HTML 복사</button>
+        </div>
+      </div>
+      <p class="kit-sec-desc">좌측 탭바와 우측 검색 버튼이 1px의 어긋남 없이 수평 일직선(<code>54px</code> / 축소 시 <code>46px</code>)을 유지하며, 우측 돋보기 클릭 시 탭바가 접히고 검색창이 전체 폭으로 부드럽게 확장됩니다.</p>
+
+      <div id="snip-dock" style="display:flex;justify-content:center;padding:14px 0;">
+        <div class="wos-tabwrap" data-wos-tabwrap>
+          <nav class="wos-tabbar" style="--tab-count:4;" role="tablist" aria-label="메인 탐색">
+            <div class="wos-tab-ind"></div>
+            <button type="button" role="tab" class="wos-tab-item active"><span class="ico">🏠</span><span>Home</span></button>
+            <button type="button" role="tab" class="wos-tab-item"><span class="ico">🚀</span><span>Projects</span></button>
+            <button type="button" role="tab" class="wos-tab-item"><span class="ico">💻</span><span>Code</span></button>
+            <button type="button" role="tab" class="wos-tab-item"><span class="ico">✨</span><span>Vision</span></button>
+          </nav>
+          <div class="wos-sbtn" role="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+            <input type="search" aria-label="검색" placeholder="검색어를 입력해 보세요 (ESC로 닫기)..." />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6~8. NEW: OVERLAYS / ACCENT / FEEDBACK -->
+    <div class="kit-grid">
+      <!-- 6. TOAST / MODAL / SHEET -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>06. Toast · Modal · Bottom Sheet</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-overlay">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">토스트는 쌓이고, 호버하면 타이머가 멈추며, 탭하면 닫힙니다. 모달·시트는 <code>WaveOSUI.open('id')</code> 또는 <code>data-wos-open</code> 으로 엽니다.</p>
+        <div class="kit-row" id="snip-overlay">
+          <button type="button" class="wos-btn wos-btn-primary" data-wos-open="demo-modal">🪟 모달 열기</button>
+          <button type="button" class="wos-btn wos-btn-aura" data-wos-open="demo-sheet">⬆ 바텀 시트</button>
+          <button type="button" class="wos-btn wos-btn-sm" data-toast="success" data-toast-msg="성공적으로 저장되었습니다">✓ Success</button>
+          <button type="button" class="wos-btn wos-btn-sm" data-toast="info" data-toast-msg="새로운 업데이트가 있어요">ℹ Info</button>
+          <button type="button" class="wos-btn wos-btn-sm" data-toast="warn" data-toast-msg="저장 공간이 부족합니다">! Warn</button>
+          <button type="button" class="wos-btn wos-btn-sm" data-toast="error" data-toast-msg="연결에 실패했습니다">✕ Error</button>
+        </div>
+      </section>
+
+      <!-- 7. ACCENT SWITCHER -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>07. Accent Color Switcher</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-accent">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">모든 컴포넌트의 광원·테두리·그라디언트가 <code>data-accent</code> 하나로 바뀝니다. 선택한 색은 기억되고, 전환은 파동 효과로 퍼집니다.</p>
+        <div class="wos-swatches" id="snip-accent" role="radiogroup" aria-label="액센트 색상">
+          <button type="button" class="wos-swatch" role="radio" aria-checked="true"  aria-label="Cryo"    data-wos-tip="Cryo"    data-accent="cryo"    style="--sw:linear-gradient(135deg,#a5f3fc,#2563eb);--sw-c:#38bdf8"></button>
+          <button type="button" class="wos-swatch" role="radio" aria-checked="false" aria-label="Violet"  data-wos-tip="Violet"  data-accent="violet"  style="--sw:linear-gradient(135deg,#ddd6fe,#7c3aed);--sw-c:#a78bfa"></button>
+          <button type="button" class="wos-swatch" role="radio" aria-checked="false" aria-label="Rose"    data-wos-tip="Rose"    data-accent="rose"    style="--sw:linear-gradient(135deg,#fecdd3,#e11d48);--sw-c:#fb7185"></button>
+          <button type="button" class="wos-swatch" role="radio" aria-checked="false" aria-label="Amber"   data-wos-tip="Amber"   data-accent="amber"   style="--sw:linear-gradient(135deg,#fde68a,#d97706);--sw-c:#fbbf24"></button>
+          <button type="button" class="wos-swatch" role="radio" aria-checked="false" aria-label="Emerald" data-wos-tip="Emerald" data-accent="emerald" style="--sw:linear-gradient(135deg,#a7f3d0,#059669);--sw-c:#34d399"></button>
+        </div>
+        <div class="kit-row" style="justify-content:space-between;flex-wrap:nowrap;gap:14px;">
+          <span style="min-width:0;">
+            <span style="display:block;font-size:13.5px;font-weight:700;">Haptic Feedback</span>
+            <span id="haptic-note" style="display:block;font-size:12px;color:var(--wos-fg-muted);">스냅·토글·알림 때 짧게 진동합니다 (Android 등)</span>
+          </span>
+          <div class="wos-switch" id="haptic-switch" role="switch" tabindex="0" aria-label="햅틱 피드백" aria-checked="true" data-wos-switch>
+            <div class="wos-switch-knob"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. TOOLTIP / PROGRESS / SKELETON -->
+      <section class="wos-card wos-chamfer kit-section-card" style="grid-column: 1 / -1;">
+        <div class="kit-sec-head">
+          <h2>08. Tooltip · Progress · Skeleton</h2>
+          <div class="kit-row">
+            <button type="button" class="wos-btn wos-btn-sm wos-btn-aura" id="demo-load-btn">▶ 로딩 시뮬레이션</button>
+            <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-feedback">&lt;/&gt; HTML 복사</button>
+          </div>
+        </div>
+        <p class="kit-sec-desc">툴팁은 <code>data-wos-tip</code> 속성만 달면 됩니다(마우스 호버·키보드 포커스, 화면 가장자리에서는 자동으로 위치 보정). 스켈레톤은 로딩 중 자리 표시자입니다.</p>
+        <div id="snip-feedback" class="kit-grid" style="align-items:start;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="kit-row">
+              <button type="button" class="wos-btn wos-btn-sm" data-wos-tip="위에 표시되는 툴팁">Hover me</button>
+              <button type="button" class="wos-btn wos-btn-sm" data-wos-tip="아래쪽 툴팁" data-wos-tip-pos="bottom">Bottom tip</button>
+              <button type="button" class="wos-btn wos-btn-icon" aria-label="도움말" data-wos-tip="키보드 포커스에서도 보여요">?</button>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px;"><span>Progress</span><b id="demo-progress-val">0%</b></div>
+              <div class="wos-progress" id="demo-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="wos-progress-bar"></div></div>
+            </div>
+            <div>
+              <div style="font-size:12.5px;margin-bottom:6px;">Indeterminate</div>
+              <div class="wos-progress indet" role="progressbar" aria-label="불확정 진행"><div class="wos-progress-bar"></div></div>
+            </div>
+            <div class="wos-ring" id="demo-ring" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="demo-ring-val">0%</span></div>
+          </div>
+          <div id="demo-skeleton-area" class="wos-glass" style="padding:18px;border-radius:var(--wos-r-lg);display:flex;gap:14px;align-items:center;">
+            <div data-skel class="wos-skeleton wos-skeleton-circle" style="width:52px;height:52px;"></div>
+            <div data-skel-wrap style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;">
+              <span data-skel class="wos-skeleton" style="width:60%;"></span>
+              <span data-skel class="wos-skeleton" style="width:90%;"></span>
+              <span data-skel class="wos-skeleton" style="width:42%;"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 9~10. FORM CONTROLS -->
+    <div class="kit-grid">
+      <!-- 9. CHECKBOX / RADIO -->
+      <section id="sec-forms" class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>09. Checkbox · Radio</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-choices">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">진짜 <code>&lt;input&gt;</code> 을 그대로 쓰기 때문에 키보드·스크린리더·폼 전송이 모두 네이티브로 동작합니다. 체크 표시는 선이 그려지듯 나타나고, "전체 선택"은 일부만 선택되면 자동으로 <code>indeterminate</code> 가 됩니다.</p>
+        <div id="snip-choices" style="display:flex;flex-direction:column;gap:4px;">
+          <label class="wos-check">
+            <input type="checkbox" data-wos-check-all="demo-opts" />
+            <span class="wos-check-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2L18.5 7.8" pathLength="1"/></svg></span>
+            <span>전체 선택</span>
+          </label>
+          <div class="kit-choices" data-wos-check-group="demo-opts" style="padding-left:6px;">
+            <label class="wos-check"><input type="checkbox" checked /><span class="wos-check-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2L18.5 7.8" pathLength="1"/></svg></span><span>Glass</span></label>
+            <label class="wos-check"><input type="checkbox" /><span class="wos-check-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2L18.5 7.8" pathLength="1"/></svg></span><span>Spring</span></label>
+            <label class="wos-check"><input type="checkbox" /><span class="wos-check-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2L18.5 7.8" pathLength="1"/></svg></span><span>Haptics</span></label>
+            <label class="wos-check"><input type="checkbox" disabled /><span class="wos-check-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2L18.5 7.8" pathLength="1"/></svg></span><span>Disabled</span></label>
+          </div>
+          <div role="radiogroup" aria-label="플랜 선택" class="kit-choices" style="margin-top:8px;padding-left:6px;">
+            <label class="wos-radio"><input type="radio" name="demo-plan" checked /><span class="wos-radio-dot"></span><span>Free</span></label>
+            <label class="wos-radio"><input type="radio" name="demo-plan" /><span class="wos-radio-dot"></span><span>Pro</span></label>
+            <label class="wos-radio"><input type="radio" name="demo-plan" /><span class="wos-radio-dot"></span><span>Team</span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. TEXTFIELD / SELECT / TEXTAREA + VALIDATION -->
+      <section class="wos-card wos-chamfer kit-section-card">
+        <div class="kit-sec-head">
+          <h2>10. Input · Select · Textarea</h2>
+          <button type="button" class="wos-btn wos-btn-sm" data-copy-target="snip-form">&lt;/&gt; HTML 복사</button>
+        </div>
+        <p class="kit-sec-desc">필드별 라벨·힌트·에러 상태를 지원합니다. 제출 시 잘못된 칸은 흔들리며(shake) 첫 오류 칸으로 포커스가 이동하고, 텍스트 영역은 입력에 맞춰 자동으로 늘어납니다.</p>
+        <div id="snip-form">
+          <form class="kit-form" id="demo-form" novalidate>
+            <div class="wos-field" data-field>
+              <label class="wos-label" for="f-name">이름</label>
+              <input id="f-name" class="wos-input" name="name" required minlength="2" autocomplete="name" placeholder="홍길동" data-error="이름을 2자 이상 입력해 주세요" />
+              <div class="wos-hint"><span data-wos-hint>2자 이상 입력해 주세요</span></div>
+            </div>
+            <div class="wos-field" data-field>
+              <label class="wos-label" for="f-role">역할</label>
+              <div class="wos-select-wrap">
+                <select id="f-role" class="wos-input wos-select" name="role" required data-error="역할을 선택해 주세요">
+                  <option value="">선택하세요</option>
+                  <option value="design">디자이너</option>
+                  <option value="dev">개발자</option>
+                  <option value="pm">기획자</option>
+                </select>
+              </div>
+              <div class="wos-hint"><span data-wos-hint>하나를 선택해 주세요</span></div>
+            </div>
+            <div class="wos-field" data-field>
+              <label class="wos-label" for="f-msg">메시지</label>
+              <textarea id="f-msg" class="wos-input" name="msg" maxlength="120" rows="3" data-wos-autogrow data-wos-count placeholder="내용을 입력하면 칸이 자동으로 늘어나요"></textarea>
+              <div class="wos-hint"><span data-wos-hint>최대 120자</span><span data-wos-counter>0 / 120</span></div>
+            </div>
+            <div class="kit-row" style="justify-content:flex-end;">
+              <button type="reset" class="wos-btn">초기화</button>
+              <button type="submit" class="wos-btn wos-btn-primary">제출</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <!-- 11. DOCS: TOKENS / QUICK START / API -->
+    <section id="sec-docs" class="wos-card wos-chamfer kit-section-card">
+      <div class="kit-sec-head">
+        <h2>11. Design Tokens · Quick Start · API</h2>
+        <button type="button" class="wos-btn wos-btn-sm" id="copy-quickstart-btn">&lt;/&gt; Quick Start 복사</button>
+      </div>
+      <p class="kit-sec-desc">모든 색·반경·곡선은 <code>--wos-*</code> 토큰입니다. 키트 CSS는 <code>@layer wos</code> 안에 있어 다른 CSS와 충돌하지 않고, 값을 바꾸려면 <code>:root</code> 에서 토큰만 덮어쓰면 됩니다. 아래 칩은 현재 테마·액센트가 실시간으로 반영됩니다.</p>
+      <div class="kit-token-grid">
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-bg)"></span><code>--wos-bg</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-fg)"></span><code>--wos-fg</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-glass-bg)"></span><code>--wos-glass-bg</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-glass-border-strong)"></span><code>--wos-glass-border-strong</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-cryo-ice)"></span><code>--wos-cryo-ice</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-cryo-mint)"></span><code>--wos-cryo-mint</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-cobalt)"></span><code>--wos-cobalt</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-gradient-primary)"></span><code>--wos-gradient-primary</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-gradient-surface),var(--wos-glass-bg)"></span><code>--wos-gradient-surface</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="border-radius:var(--wos-r-md);background:var(--wos-glass-bg-hover)"></span><code>--wos-r-pill / xl / lg / md / sm</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:rgba(var(--wos-a1-rgb),.6)"></span><code>--wos-a1…a6-rgb (accent)</code></div>
+        <div class="kit-token"><span class="kit-token-sw" style="background:var(--wos-glass-bg-hover)"></span><code>--wos-spring-snappy / smooth / fluid</code></div>
+      </div>
+      <pre class="kit-code" id="kit-quickstart" tabindex="0">&lt;!-- 1) 올인원 복사한 &lt;style&gt; / &lt;script&gt; 를 페이지에 붙여넣기 --&gt;
+&lt;button class="wos-btn wos-btn-primary"&gt;Hello WAVE&lt;/button&gt;
+
+&lt;div class="wos-card wos-chamfer" style="padding:20px"&gt;Glass Card&lt;/div&gt;
+
+&lt;button class="wos-btn" data-wos-open="my-modal"&gt;Open&lt;/button&gt;
+&lt;script&gt;
+  WaveOSUI.toast('Ready!', { type: 'success' });
+  WaveOSUI.setAccent('violet');
+&lt;/script&gt;</pre>
+      <div class="kit-table-scroll">
+        <table class="kit-api">
+          <thead><tr><th>API / 속성</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><code>WaveOSUI.toast(msg, {type,duration,icon})</code></td><td>토스트 표시 (success · info · warn · error)</td></tr>
+            <tr><td><code>WaveOSUI.open(id) / close(id)</code></td><td>모달·시트 열기/닫기 (<code>data-wos-open</code>, <code>data-wos-close</code> 로도 가능)</td></tr>
+            <tr><td><code>WaveOSUI.setAccent(name, el?)</code></td><td>cryo · violet · rose · amber · emerald, 파동 전환</td></tr>
+            <tr><td><code>WaveOSUI.toggleTheme(el?)</code></td><td>다크/라이트 파동 전환 (선택 저장)</td></tr>
+            <tr><td><code>WaveOSUI.haptic(ms | [..])</code> · <code>setHaptics(bool)</code></td><td>진동 피드백 직접 호출 / 켜고 끄기</td></tr>
+            <tr><td><code>WaveOSUI.glassDrag(el, ind, n, opts)</code></td><td>세그먼트·탭·스위치용 물리 드래그 엔진</td></tr>
+            <tr><td><code>data-wos-tip</code> · <code>data-wos-tip-pos</code></td><td>툴팁 텍스트 / 위치(top·bottom)</td></tr>
+            <tr><td><code>data-wos-autocompact</code></td><td>탭바(<code>.wos-tabwrap</code>)가 스크롤 방향에 따라 자동 축소/복원</td></tr>
+            <tr><td><code>data-wos-autogrow</code> · <code>data-wos-count</code></td><td>textarea 자동 높이 / 글자 수 카운터(<code>[data-wos-counter]</code>)</td></tr>
+            <tr><td><code>data-wos-check-all</code> · <code>data-wos-check-group</code></td><td>전체 선택 체크박스 + indeterminate 자동 처리</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- FLOATING SECTION DOCK (auto compact + search filter) -->
+  <div class="kit-dock">
+    <div class="wos-tabwrap" data-wos-tabwrap data-wos-autocompact id="kit-dock">
+      <nav class="wos-tabbar" style="--tab-count:4;" role="tablist" aria-label="섹션 이동">
+        <div class="wos-tab-ind"></div>
+        <button type="button" role="tab" class="wos-tab-item active" data-goto="top"><span class="ico">🏠</span><span>Top</span></button>
+        <button type="button" role="tab" class="wos-tab-item" data-goto="sec-buttons"><span class="ico">🔘</span><span>Basics</span></button>
+        <button type="button" role="tab" class="wos-tab-item" data-goto="sec-forms"><span class="ico">📝</span><span>Forms</span></button>
+        <button type="button" role="tab" class="wos-tab-item" data-goto="sec-docs"><span class="ico">📚</span><span>Docs</span></button>
+      </nav>
+      <div class="wos-sbtn" role="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+        <input type="search" id="kit-search" aria-label="섹션 검색" placeholder="섹션 검색 (예: toast, form)..." enterkeyhint="search" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="wos-overlay" id="demo-modal" aria-hidden="true">
+    <div class="wos-modal wos-glass" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+      <h3 class="wos-modal-title" id="demo-modal-title">변경 사항을 적용할까요?</h3>
+      <div class="wos-modal-body">
+        <p>글래스 모달은 바깥 영역 클릭, <b>ESC</b>, 닫기 버튼으로 닫힙니다. 열려 있는 동안 포커스는 모달 안에 머물고, 닫으면 원래 버튼으로 돌아갑니다.</p>
+        <input type="text" class="wos-input" aria-label="메모" placeholder="메모를 남겨 보세요..." />
+      </div>
+      <div class="wos-modal-actions">
+        <button type="button" class="wos-btn" data-wos-close>취소</button>
+        <button type="button" class="wos-btn wos-btn-primary" data-wos-close data-toast="success" data-toast-msg="변경 사항이 적용되었습니다">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET -->
+  <div class="wos-overlay wos-overlay-sheet" id="demo-sheet" aria-hidden="true">
+    <div class="wos-sheet wos-glass" role="dialog" aria-modal="true" aria-labelledby="demo-sheet-title">
+      <div class="wos-sheet-grab" data-wos-grab aria-hidden="true"></div>
+      <h3 class="wos-modal-title" id="demo-sheet-title">공유하기</h3>
+      <div class="wos-modal-body">
+        <p>핸들(상단 막대)을 아래로 끌거나 빠르게 쓸어내리면 닫힙니다.</p>
+        <div class="kit-row">
+          <button type="button" class="wos-btn wos-btn-aura" data-wos-close data-toast="info" data-toast-msg="링크를 복사했어요">🔗 링크 복사</button>
+          <button type="button" class="wos-btn" data-wos-close data-toast="success" data-toast-msg="저장되었습니다">💾 저장</button>
+          <button type="button" class="wos-btn" data-wos-close data-toast="warn" data-toast-msg="이 작업은 되돌릴 수 없어요">🗑 삭제</button>
+        </div>
+      </div>
+      <div class="wos-modal-actions">
+        <button type="button" class="wos-btn" data-wos-close>닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================================
+       [2] WAVE OS 3.0 CORE JS (다른 프로젝트에 그대로 붙여넣기 가능한 경량 물리/인터랙션 엔진)
+       ============================================================================ -->
+  <script id="wave-os-core-js">
+    (function initWaveOSUI() {
+      const root = document.documentElement;
+      const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+      // 0. Haptics (navigator.vibrate 지원 기기에서만 동작 — iOS Safari 는 미지원이라 조용히 무시됨)
+      let hapticsOn = true;
+      try { hapticsOn = localStorage.getItem('wos-haptics') !== '0'; } catch (_) {}
+      const canVibrate = typeof navigator.vibrate === 'function';
+      function haptic(pattern = 8) {
+        if (hapticsOn && canVibrate) { try { navigator.vibrate(pattern); } catch (_) {} }
+      }
+      function setHaptics(on) {
+        hapticsOn = !!on;
+        try { localStorage.setItem('wos-haptics', on ? '1' : '0'); } catch (_) {}
+        if (on) haptic(12);
+      }
+
+      // 에러 입력칸 흔들기 유틸
+      function shake(el) {
+        if (!el || reduceMotion.matches) return;
+        el.classList.remove('shake');
+        void el.offsetWidth; // 애니메이션 재시작
+        el.classList.add('shake');
+        el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+      }
+
+      // 1. Cursor-Tracking Specular Spotlight & Subtle Magnetic Button Pull
+      //    (rAF로 프레임당 1회만 갱신 → 레이아웃 읽기 최소화, 마우스 전용)
+      let raf = 0, pending = null;
+      function applyPointer() {
+        raf = 0;
+        if (!pending) return;
+        const { e, target } = pending; pending = null;
+        const r = target.getBoundingClientRect();
+        target.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        target.style.setProperty('--my', `${e.clientY - r.top}px`);
+        // 마그네틱(버튼이 커서 쪽으로 끌려오는 효과)은 클릭 정확도를 해쳐서 제거함 — 스포트라이트만 유지
+      }
+      document.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || !finePointer.matches) return;
+        const target = e.target.closest?.('.wos-glass, .wos-card, .wos-btn');
+        if (!target) return;
+        pending = { e, target };
+        if (!raf) raf = requestAnimationFrame(applyPointer);
+      }, { passive: true });
+
+      document.addEventListener('pointerout', (e) => {
+        const btn = e.target.closest?.('.wos-btn');
+        if (btn && !btn.contains(e.relatedTarget)) {
+          btn.style.setProperty('--tx', '0px');
+          btn.style.setProperty('--ty', '0px');
+        }
+      }, { passive: true });
+
+      // 2. Tactile Click Ripple on .wos-btn (터치 시 스포트라이트 위치도 갱신)
+      document.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest?.('.wos-btn');
+        if (!btn || btn.disabled) return;
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        btn.style.setProperty('--my', `${e.clientY - r.top}px`);
+        if (reduceMotion.matches) return;
+        const size = Math.max(r.width, r.height);
+        const ripple = document.createElement('span');
+        ripple.className = 'wos-ripple';
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - r.left - size / 2}px`;
+        ripple.style.top = `${e.clientY - r.top - size / 2}px`;
+        btn.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+        setTimeout(() => ripple.remove(), 800); // 폴백
+      }, { passive: true });
+
+      // 3. Universal glassDrag Physics Engine (Segmented Control, Tab Bar, Switch)
+      function glassDrag(el, ind, n, o = {}) {
+        if (!el || !ind || !n) return null;
+        const pad = o.pad ?? 4;
+        const K = o.knob;
+        let cur = o.start || 0, dg = 0, mv = 0, x0 = 0, id0 = 0, tx = 0, lx = 0, lt = 0, vel = 0, pid = null, lastI = -1;
+        const span = () => K ? Math.max(1, el.clientWidth - ind.offsetWidth - pad * 2) : (el.clientWidth - pad * 2);
+        const slot = () => K ? span() : span() / n;
+        const clamp = (x) => Math.max(-slot() * 0.1, Math.min(span() - (K ? 0 : slot()) + slot() * 0.1, x));
+        const idx = (i) => Math.max(0, Math.min(n - 1, i));
+        const rel = (cx) => cx - el.getBoundingClientRect().left - pad - (K ? ind.offsetWidth / 2 : 0);
+        const place = (x) => {
+          tx = x;
+          if (!K) ind.style.width = `${slot()}px`;
+          ind.style.transform = `translate3d(${pad + x}px, 0, 0)`;
+          const i = idx(Math.round(x / Math.max(1, slot())));
+          if (mv && i !== lastI) haptic(6); // 드래그 중 칸을 넘을 때만 "틱"
+          lastI = i;
+          o.onDrag?.(x / Math.max(1, span()), i);
+        };
+        const set = (i, fire = true) => {
+          cur = idx(i);
+          place(cur * slot());
+          if (fire) {
+            o.onChange?.(cur);
+            haptic(10);
+            el.dispatchEvent(new CustomEvent('wos-change', { bubbles: true, detail: { index: cur } }));
+          }
+        };
+        el.addEventListener('pointerdown', (e) => {
+          if (dg || (e.pointerType === 'mouse' && e.button !== 0)) return;
+          dg = 1; mv = 0; pid = e.pointerId;
+          x0 = lx = e.clientX; lt = performance.now(); vel = 0; id0 = cur;
+          ind.classList.add('press');
+          try { el.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        el.addEventListener('pointermove', (e) => {
+          if (!dg || e.pointerId !== pid) return;
+          const now = performance.now(), dt = now - lt;
+          if (dt > 0) { vel = (e.clientX - lx) / dt; lx = e.clientX; lt = now; }
+          const d = e.clientX - x0;
+          // 터치는 손가락 흔들림이 크므로 임계값을 더 크게
+          if (!mv && Math.abs(d) > (e.pointerType === 'touch' ? 8 : 4)) { mv = 1; ind.classList.add('drag'); }
+          if (mv) place(clamp(K ? id0 * slot() + d : rel(e.clientX) - slot() / 2));
+        });
+        const finish = (e, cancel = false) => {
+          if (!dg || e.pointerId !== pid) return;
+          dg = 0; pid = null;
+          ind.classList.remove('press', 'drag');
+          if (cancel) { set(cur, false); return; }
+          set(mv ? idx(Math.round((tx + vel * (K ? 48 : 135)) / slot())) : (K ? 1 - cur : idx(Math.floor(rel(e.clientX) / slot()))));
+        };
+        el.addEventListener('pointerup', (e) => finish(e, false));
+        el.addEventListener('pointercancel', (e) => finish(e, true));
+        // 레이아웃 변화(회전·리사이즈·폰트 로드)에 대응 — 이동 애니메이션 없이 즉시 재배치해 "끌려오는" 느낌 제거
+        const relayout = () => {
+          if (dg || el.clientWidth < 8) return; // 접힌(검색 열림) 상태에서는 계산 생략
+          ind.classList.add('drag');
+          set(cur, false);
+          requestAnimationFrame(() => requestAnimationFrame(() => { if (!dg) ind.classList.remove('drag'); }));
+        };
+        if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(el);
+        else window.addEventListener('resize', relayout);
+        requestAnimationFrame(() => set(cur, false));
+        const api = { set, get: () => cur };
+        el._wosDrag = api;
+        return api;
+      }
+
+      // Auto-bind all [data-wos-seg]
+      document.querySelectorAll('[data-wos-seg]').forEach((seg) => {
+        const pill = seg.querySelector('.wos-seg-pill');
+        const btns = [...seg.querySelectorAll('button')];
+        const sync = (i) => btns.forEach((b, k) => {
+          b.classList.toggle('active', k === i);
+          b.setAttribute('aria-selected', String(k === i));
+          b.tabIndex = k === i ? 0 : -1;
+        });
+        const g = glassDrag(seg, pill, btns.length, {
+          pad: 4,
+          start: Math.max(0, btns.findIndex((b) => b.classList.contains('active'))),
+          onDrag: (_, i) => sync(i),
+          onChange: sync
+        });
+        // 키보드(Enter/Space/방향키) 지원: 포인터 클릭은 glassDrag가 처리
+        btns.forEach((b, k) => b.addEventListener('click', (e) => { if (e.detail === 0) g.set(k); }));
+        seg.addEventListener('keydown', (e) => {
+          const dir = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+          if (!dir) return;
+          e.preventDefault();
+          const next = Math.max(0, Math.min(btns.length - 1, g.get() + dir));
+          g.set(next); btns[next].focus();
+        });
+      });
+
+      // Auto-bind all [data-wos-tabwrap]
+      document.querySelectorAll('[data-wos-tabwrap]').forEach((tw) => {
+        const bar = tw.querySelector('.wos-tabbar');
+        const ind = tw.querySelector('.wos-tab-ind');
+        const items = [...tw.querySelectorAll('.wos-tab-item')];
+        const sbtn = tw.querySelector('.wos-sbtn');
+        const sInput = sbtn?.querySelector('input');
+        const sync = (i) => items.forEach((b, k) => {
+          b.classList.toggle('active', k === i);
+          b.setAttribute('aria-selected', String(k === i));
+          b.tabIndex = k === i ? 0 : -1;
+        });
+
+        const g = glassDrag(bar, ind, items.length, {
+          pad: 4,
+          start: Math.max(0, items.findIndex((b) => b.classList.contains('active'))),
+          onDrag: (_, i) => sync(i),
+          onChange: (i) => { tw.classList.remove('min'); sync(i); }
+        });
+        items.forEach((b, k) => b.addEventListener('click', (e) => { if (e.detail === 0) g.set(k); }));
+        bar.addEventListener('keydown', (e) => {
+          const dir = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+          if (!dir) return;
+          e.preventDefault();
+          const next = Math.max(0, Math.min(items.length - 1, g.get() + dir));
+          g.set(next); items[next].focus();
+        });
+
+        if (sbtn && sInput) {
+          let closeTimer = 0;
+          const close = () => { clearTimeout(closeTimer); tw.classList.remove('s'); };
+          sbtn.addEventListener('click', () => {
+            if (tw.classList.contains('s')) return;
+            tw.classList.remove('min');
+            tw.classList.add('s');
+            // 모바일: 트랜지션 중 포커스 점프 방지 + 키보드 즉시 표시를 위해 preventScroll
+            sInput.focus({ preventScroll: true });
+          });
+          sInput.addEventListener('blur', () => { closeTimer = setTimeout(close, 150); });
+          sInput.addEventListener('focus', () => clearTimeout(closeTimer));
+          sInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { sInput.blur(); close(); }
+          });
+        }
+      });
+
+      // Auto-bind all [data-wos-switch]
+      document.querySelectorAll('[data-wos-switch]').forEach((sw) => {
+        const knob = sw.querySelector('.wos-switch-knob');
+        const startOn = sw.getAttribute('aria-checked') !== 'false' ? 1 : 0;
+        const g = glassDrag(sw, knob, 2, {
+          pad: 3,
+          knob: true,
+          start: startOn,
+          onDrag: (p) => sw.style.setProperty('--p', p),
+          onChange: (i) => sw.setAttribute('aria-checked', String(!!i))
+        });
+        sw.addEventListener('keydown', (e) => {
+          if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); g.set(1 - g.get()); }
+          else if (e.key === 'ArrowRight') { e.preventDefault(); g.set(1); }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); g.set(0); }
+        });
+      });
+
+      // Auto-bind all [data-wos-slider]
+      document.querySelectorAll('[data-wos-slider]').forEach((sl) => {
+        const fill = sl.querySelector('.wos-slider-fill');
+        const knob = sl.querySelector('.wos-slider-knob');
+        const valEl = sl.parentElement?.querySelector('[data-wos-slider-val]');
+        let v = 0.65, d = false, pid = null;
+        const render = () => {
+          const pct = Math.round(v * 100);
+          sl.style.setProperty('--v', v);
+          if (fill) fill.style.width = `${pct}%`;
+          if (valEl) valEl.textContent = `${pct}%`;
+          sl.setAttribute('aria-valuenow', String(pct));
+        };
+        const move = (e) => {
+          const r = sl.getBoundingClientRect();
+          v = Math.max(0, Math.min(1, (e.clientX - r.left - 14) / Math.max(1, r.width - 28)));
+          render();
+        };
+        render();
+        sl.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          d = true; pid = e.pointerId;
+          knob?.classList.add('dn');
+          try { sl.setPointerCapture(e.pointerId); } catch (_) {}
+          move(e);
+        });
+        sl.addEventListener('pointermove', (e) => { if (d && e.pointerId === pid) move(e); });
+        const up = (e) => { if (e.pointerId !== pid) return; d = false; pid = null; knob?.classList.remove('dn'); };
+        sl.addEventListener('pointerup', up);
+        sl.addEventListener('pointercancel', up);
+        sl.addEventListener('keydown', (e) => {
+          const step = e.shiftKey ? 0.1 : 0.01;
+          const map = { ArrowRight: step, ArrowUp: step, ArrowLeft: -step, ArrowDown: -step };
+          if (e.key === 'Home') v = 0;
+          else if (e.key === 'End') v = 1;
+          else if (map[e.key] !== undefined) v = Math.max(0, Math.min(1, v + map[e.key]));
+          else return;
+          e.preventDefault();
+          render();
+        });
+      });
+
+      // Auto-bind Popovers
+      //  - body 로 옮겨 fixed 배치 → 카드 overflow 에 잘리지 않음, 화면 아래가 좁으면 위로 열림
+      //  - ↑/↓/Home/End 키 탐색, ESC·바깥 클릭·스크롤·리사이즈 시 닫힘
+      document.querySelectorAll('[data-wos-popover-btn]').forEach((btn) => {
+        const pop = btn.parentElement?.querySelector('.wos-popover');
+        if (!pop) return;
+        const isOpen = () => pop.classList.contains('open');
+        const items = () => [...pop.querySelectorAll('button:not([disabled])')];
+        const placePop = () => {
+          const r = btn.getBoundingClientRect();
+          const w = pop.offsetWidth, h = pop.offsetHeight;
+          const left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w));
+          const below = innerHeight - r.bottom - 10 >= h + 8 || r.top < h + 18;
+          const top = below ? r.bottom + 10 : r.top - h - 10;
+          pop.style.left = `${left}px`;
+          pop.style.top = `${Math.max(8, top)}px`;
+          pop.style.transformOrigin = `${r.left + r.width / 2 - left}px ${below ? '0' : '100%'}`;
+          pop.style.setProperty('--ty', below ? '-8px' : '8px');
+        };
+        const setOpen = (open, focusFirst) => {
+          if (open === isOpen()) return;
+          if (open) {
+            if (!pop.classList.contains('portal')) { pop.classList.add('portal'); document.body.appendChild(pop); }
+            placePop();
+            requestAnimationFrame(() => pop.classList.add('open'));
+            haptic(6);
+            if (focusFirst) setTimeout(() => items()[0]?.focus({ preventScroll: true }), 40);
+          } else {
+            pop.classList.remove('open');
+          }
+          btn.setAttribute('aria-expanded', String(open));
+        };
+        btn.addEventListener('click', () => setOpen(!isOpen(), btn.matches(':focus-visible')));
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true, true); }
+        });
+        pop.addEventListener('click', () => {
+          const had = pop.contains(document.activeElement);
+          setOpen(false);
+          if (had) btn.focus({ preventScroll: true });
+        });
+        document.addEventListener('click', (e) => {
+          if (isOpen() && !pop.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (!isOpen()) return;
+          if (e.key === 'Escape') { setOpen(false); btn.focus({ preventScroll: true }); return; }
+          if (e.key === 'Tab') { setOpen(false); return; }
+          const list = items();
+          const cur = list.indexOf(document.activeElement);
+          let next = -1;
+          if (e.key === 'ArrowDown') next = (cur + 1) % list.length;
+          else if (e.key === 'ArrowUp') next = (cur - 1 + list.length) % list.length;
+          else if (e.key === 'Home') next = 0;
+          else if (e.key === 'End') next = list.length - 1;
+          if (next > -1) { e.preventDefault(); list[next].focus({ preventScroll: true }); }
+        });
+        window.addEventListener('resize', () => setOpen(false));
+        window.addEventListener('scroll', () => setOpen(false), { passive: true });
+      });
+
+      // 4. Overlays: Modal & Bottom Sheet (ESC · 바깥 클릭 · 포커스 트랩/복귀 · 스크롤 잠금)
+      const overlayStack = [];
+      const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+      const getOverlay = (id) => (typeof id === 'string' ? document.getElementById(id) : id);
+
+      function open(id, from) {
+        const ov = getOverlay(id);
+        if (!ov || ov.classList.contains('open')) return;
+        ov._wosFrom = from || document.activeElement;
+        ov.classList.add('open');
+        ov.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('wos-scroll-lock');
+        overlayStack.push(ov);
+        haptic(8);
+        const dlg = ov.firstElementChild;
+        if (dlg) { dlg.tabIndex = -1; setTimeout(() => dlg.focus({ preventScroll: true }), 60); }
+      }
+      function close(id) {
+        const ov = getOverlay(id);
+        if (!ov || !ov.classList.contains('open')) return;
+        ov.classList.remove('open');
+        ov.setAttribute('aria-hidden', 'true');
+        const i = overlayStack.indexOf(ov);
+        if (i > -1) overlayStack.splice(i, 1);
+        if (!overlayStack.length) document.body.classList.remove('wos-scroll-lock');
+        ov.querySelector('.wos-sheet')?.style.removeProperty('--dy');
+        ov._wosFrom?.focus?.({ preventScroll: true });
+      }
+
+      document.addEventListener('click', (e) => {
+        const opener = e.target.closest?.('[data-wos-open]');
+        if (opener) { open(opener.dataset.wosOpen, opener); return; }
+        const closer = e.target.closest?.('[data-wos-close]');
+        if (closer) { close(closer.closest('.wos-overlay')); return; }
+        if (e.target.classList?.contains('wos-overlay')) close(e.target);
+      });
+      document.addEventListener('keydown', (e) => {
+        const top = overlayStack[overlayStack.length - 1];
+        if (!top) return;
+        if (e.key === 'Escape') { e.preventDefault(); close(top); return; }
+        if (e.key === 'Tab') {
+          const items = [...top.querySelectorAll(FOCUSABLE)].filter((n) => n.offsetParent !== null);
+          if (!items.length) { e.preventDefault(); return; }
+          const first = items[0], last = items[items.length - 1];
+          if (!top.contains(document.activeElement) || document.activeElement === top.firstElementChild) {
+            e.preventDefault(); (e.shiftKey ? last : first).focus();
+          } else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+
+      // Sheet 드래그-투-디스미스 (핸들 [data-wos-grab])
+      document.querySelectorAll('[data-wos-grab]').forEach((grab) => {
+        const sheet = grab.closest('.wos-sheet'), ov = grab.closest('.wos-overlay');
+        let on = false, pid = null, sy = 0, ly = 0, lt = 0, dy = 0, vy = 0;
+        grab.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          on = true; pid = e.pointerId; sy = ly = e.clientY; lt = performance.now(); dy = vy = 0;
+          sheet.classList.add('dragging');
+          try { grab.setPointerCapture(pid); } catch (_) {}
+        });
+        grab.addEventListener('pointermove', (e) => {
+          if (!on || e.pointerId !== pid) return;
+          const now = performance.now(), dt = now - lt;
+          if (dt > 0) { vy = (e.clientY - ly) / dt; ly = e.clientY; lt = now; }
+          dy = Math.max(0, e.clientY - sy);
+          sheet.style.setProperty('--dy', `${dy}px`);
+        });
+        const end = (e, cancel) => {
+          if (!on || e.pointerId !== pid) return;
+          on = false; pid = null;
+          sheet.classList.remove('dragging');
+          if (!cancel && (dy > sheet.offsetHeight * 0.3 || vy > 0.6)) { haptic(8); close(ov); }
+          else sheet.style.setProperty('--dy', '0px');
+        };
+        grab.addEventListener('pointerup', (e) => end(e, false));
+        grab.addEventListener('pointercancel', (e) => end(e, true));
+      });
+
+      // 5. Toast Stack
+      let toastStack = null;
+      function dismissToast(el) {
+        if (!el || el.dataset.gone) return;
+        el.dataset.gone = '1';
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 320);
+      }
+      function toast(msg, o = {}) {
+        if (typeof o === 'string') o = { type: o };
+        const type = o.type || 'info', dur = o.duration || 3000;
+        if (!toastStack) {
+          toastStack = document.createElement('div');
+          toastStack.className = 'wos-toasts';
+        }
+        if (!toastStack.isConnected) document.body.appendChild(toastStack);
+        const live = [...toastStack.children].filter((c) => !c.dataset.gone);
+        while (live.length >= 4) dismissToast(live.shift());
+        const el = document.createElement('div');
+        el.className = 'wos-toast wos-glass';
+        el.dataset.type = type;
+        el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        el.style.setProperty('--dur', `${dur}ms`);
+        el.innerHTML = '<span class="wos-toast-ico"></span><span class="wos-toast-msg"></span><span class="wos-toast-bar"></span>';
+        el.children[0].textContent = o.icon || { success: '✓', info: 'i', warn: '!', error: '✕' }[type] || 'i';
+        el.children[1].textContent = msg;
+        el.children[2].addEventListener('animationend', () => dismissToast(el));
+        el.addEventListener('click', () => dismissToast(el));
+        toastStack.appendChild(el);
+        const hp = { success: 10, warn: [14, 30, 14], error: [18, 40, 18] }[type];
+        if (hp) haptic(hp);
+        return el;
+      }
+      document.addEventListener('click', (e) => {
+        const t = e.target.closest?.('[data-toast]');
+        if (t) toast(t.dataset.toastMsg || '', { type: t.dataset.toast });
+      });
+
+      // 6. Tooltip ([data-wos-tip]) — 마우스 호버 · 키보드 포커스
+      const tip = document.createElement('div');
+      tip.className = 'wos-tooltip';
+      tip.id = 'wos-tooltip';
+      tip.setAttribute('role', 'tooltip');
+      document.body.appendChild(tip);
+      let tipFor = null;
+      function showTip(el) {
+        const text = el.dataset.wosTip;
+        if (!text) return;
+        tipFor = el;
+        tip.textContent = text;
+        tip.style.left = '0px'; tip.style.top = '0px';
+        const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+        let pos = el.dataset.wosTipPos === 'bottom' ? 'bottom' : 'top';
+        if (pos === 'top' && r.top - h - 10 < 8) pos = 'bottom';
+        else if (pos === 'bottom' && r.bottom + h + 10 > innerHeight - 8) pos = 'top';
+        const x = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+        tip.style.left = `${x}px`;
+        tip.style.top = `${pos === 'top' ? r.top - h - 10 : r.bottom + 10}px`;
+        tip.style.setProperty('--ty', pos === 'top' ? '4px' : '-4px');
+        el.setAttribute('aria-describedby', 'wos-tooltip');
+        tip.classList.add('show');
+      }
+      function hideTip() {
+        tip.classList.remove('show');
+        tipFor?.removeAttribute('aria-describedby');
+        tipFor = null;
+      }
+      document.addEventListener('pointerover', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const el = e.target.closest?.('[data-wos-tip]');
+        if (el && el !== tipFor) showTip(el);
+      });
+      document.addEventListener('pointerout', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const el = e.target.closest?.('[data-wos-tip]');
+        if (el && !el.contains(e.relatedTarget)) hideTip();
+      });
+      document.addEventListener('focusin', (e) => {
+        const el = e.target.closest?.('[data-wos-tip]');
+        if (el && el.matches(':focus-visible')) showTip(el);
+      });
+      document.addEventListener('focusout', hideTip);
+      document.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') hideTip(); }, { passive: true });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideTip(); });
+      window.addEventListener('scroll', hideTip, { passive: true, capture: true });
+
+      // 7. Accent Presets (data-accent) + 스와치 바인딩
+      const ACCENTS = ['cryo', 'violet', 'rose', 'amber', 'emerald'];
+      function wave(apply, triggerEl) {
+        if (!document.startViewTransition || !triggerEl || reduceMotion.matches) { apply(); return; }
+        const r = triggerEl.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        document.startViewTransition(apply).ready.then(() => {
+          root.animate(
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${rad}px at ${x}px ${y}px)`] },
+            { duration: 640, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' }
+          );
+        }).catch(() => {});
+      }
+      function setAccent(name, triggerEl) {
+        if (!ACCENTS.includes(name)) name = 'cryo';
+        wave(() => {
+          if (name === 'cryo') root.removeAttribute('data-accent');
+          else root.setAttribute('data-accent', name);
+          document.querySelectorAll('.wos-swatch[data-accent]').forEach((s) => s.setAttribute('aria-checked', String(s.dataset.accent === name)));
+        }, triggerEl);
+        try { localStorage.setItem('wos-accent', name); } catch (_) {}
+      }
+      try {
+        const saved = localStorage.getItem('wos-accent');
+        if (saved && ACCENTS.includes(saved)) setAccent(saved, null);
+      } catch (_) {}
+      document.querySelectorAll('[role="radiogroup"]').forEach((grp) => {
+        const sw = [...grp.querySelectorAll('.wos-swatch[data-accent]')];
+        if (!sw.length) return;
+        const sync = () => sw.forEach((s) => { s.tabIndex = s.getAttribute('aria-checked') === 'true' ? 0 : -1; });
+        sync();
+        sw.forEach((s) => s.addEventListener('click', () => { setAccent(s.dataset.accent, s); setTimeout(sync, 0); }));
+        grp.addEventListener('keydown', (e) => {
+          const dir = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+          if (!dir) return;
+          e.preventDefault();
+          const cur = sw.findIndex((s) => s.getAttribute('aria-checked') === 'true');
+          const next = sw[(cur + dir + sw.length) % sw.length];
+          next.focus(); next.click();
+        });
+      });
+
+      // 8. Form helpers: textarea 자동 높이 · 글자 수 · 전체 선택(indeterminate) · 체크 햅틱
+      function refreshField(t) {
+        if (t.hasAttribute('data-wos-autogrow')) {
+          t.style.height = 'auto';
+          t.style.height = `${t.scrollHeight + (t.offsetHeight - t.clientHeight)}px`;
+        }
+        if (t.hasAttribute('data-wos-count')) {
+          const c = t.closest('.wos-field')?.querySelector('[data-wos-counter]');
+          if (c) c.textContent = t.maxLength > 0 ? `${t.value.length} / ${t.maxLength}` : String(t.value.length);
+        }
+      }
+      document.querySelectorAll('textarea.wos-input').forEach((t) => {
+        refreshField(t);
+        t.addEventListener('input', () => refreshField(t));
+        t.form?.addEventListener('reset', () => setTimeout(() => refreshField(t), 0));
+      });
+      window.addEventListener('resize', () => document.querySelectorAll('textarea[data-wos-autogrow]').forEach(refreshField));
+
+      document.querySelectorAll('[data-wos-check-all]').forEach((all) => {
+        const group = document.querySelector(`[data-wos-check-group="${all.dataset.wosCheckAll}"]`);
+        if (!group) return;
+        const boxes = () => [...group.querySelectorAll('input[type="checkbox"]:not(:disabled)')];
+        const sync = () => {
+          const b = boxes(), n = b.filter((x) => x.checked).length;
+          all.checked = n > 0 && n === b.length;
+          all.indeterminate = n > 0 && n < b.length;
+        };
+        all.addEventListener('change', () => { boxes().forEach((x) => { x.checked = all.checked; }); all.indeterminate = false; });
+        group.addEventListener('change', sync);
+        sync();
+      });
+      document.addEventListener('change', (e) => {
+        if (e.target.matches?.('.wos-check input, .wos-radio input')) haptic(6);
+      });
+
+      // 9. Auto-compact: 아래로 스크롤하면 탭바가 46px 아이콘 모드로, 위로 올리면 복원
+      document.querySelectorAll('[data-wos-autocompact]').forEach((tw) => {
+        let lastY = window.scrollY, ticking = false;
+        const update = () => {
+          ticking = false;
+          const y = window.scrollY, d = y - lastY;
+          const maxY = document.documentElement.scrollHeight - innerHeight;
+          if (tw.classList.contains('s')) { lastY = y; return; }
+          if (y <= 24) { tw.classList.remove('min'); lastY = y; return; }
+          if (y >= maxY - 2 || Math.abs(d) < 6) return; // iOS 고무줄 스크롤·미세 이동 무시
+          tw.classList.toggle('min', d > 0);
+          lastY = y;
+        };
+        window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+        tw.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') tw.classList.remove('min'); });
+        tw.addEventListener('focusin', () => tw.classList.remove('min'));
+      });
+
+      // Expose Circular Wave Theme Switcher globally
+      window.WaveOSUI = {
+        glassDrag,
+        open, close, toast, setAccent, haptic, setHaptics, shake,
+        toggleTheme(triggerEl) {
+          const isLight = root.getAttribute('data-theme') === 'light';
+          const apply = () => {
+            if (isLight) root.removeAttribute('data-theme');
+            else root.setAttribute('data-theme', 'light');
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight ? '#02050b' : '#f1f5f9');
+            try { localStorage.setItem('wos-theme', isLight ? 'dark' : 'light'); } catch (_) {}
+          };
+          if (!document.startViewTransition || !triggerEl || reduceMotion.matches) { apply(); return !isLight; }
+          const r = triggerEl.getBoundingClientRect();
+          const x = r.left + r.width / 2, y = r.top + r.height / 2;
+          const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+          document.startViewTransition(apply).ready.then(() => {
+            root.animate(
+              { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${rad}px at ${x}px ${y}px)`] },
+              { duration: 640, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' }
+            );
+          }).catch(() => {});
+          return !isLight;
+        }
+      };
+    })();
+  </script>
+
+  <!-- DEMO COPY & HELPER SCRIPT -->
+  <script>
+    function notifyCopy(msg) {
+      const warn = msg.startsWith('⚠️');
+      WaveOSUI.toast(msg.replace(/^⚠️\s*/, ''), { type: warn ? 'warn' : 'success' });
+    }
+
+    async function copyText(txt, label) {
+      try {
+        await navigator.clipboard.writeText(txt);
+        notifyCopy(label);
+      } catch (_) {
+        const ta = document.createElement('textarea');
+        ta.value = txt;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px;';
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, txt.length);
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (__) {}
+        ta.remove();
+        notifyCopy(ok ? label : '⚠️ 복사에 실패했습니다. 직접 선택해 복사해 주세요.');
+      }
+    }
+
+    const coreCss = document.getElementById('wave-os-core-css').textContent.trim();
+    const coreJs = document.getElementById('wave-os-core-js').textContent.trim();
+
+    document.getElementById('copy-css-btn').addEventListener('click', () => {
+      copyText(`<style>\n${coreCss}\n</style>`, '🎨 WAVE OS 3.0 Core CSS가 클립보드에 복사되었습니다!');
+    });
+    document.getElementById('copy-js-btn').addEventListener('click', () => {
+      copyText(`<script>\n${coreJs}\n<\/script>`, '⚙️ WAVE OS 3.0 Core JS가 클립보드에 복사되었습니다!');
+    });
+    document.getElementById('copy-all-btn').addEventListener('click', () => {
+      copyText(`<!-- WAVE OS 3.0 STANDALONE UI KIT -->\n<style>\n${coreCss}\n</style>\n<script>\n${coreJs}\n<\/script>`, '📋 올인원(CSS + JS) 스니펫이 클립보드에 복사되었습니다!');
+    });
+
+    document.querySelectorAll('[data-copy-target]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.copyTarget);
+        if (target) copyText(target.innerHTML.trim(), '✨ 컴포넌트 HTML 마크업이 복사되었습니다!');
+      });
+    });
+
+    const themeBtn = document.getElementById('kit-theme-btn');
+    function switchTheme(trigger) {
+      const nowLight = window.WaveOSUI.toggleTheme(trigger);
+      themeBtn.textContent = nowLight ? '☀️' : '🌙';
+    }
+    themeBtn.addEventListener('click', () => switchTheme(themeBtn));
+    document.getElementById('popover-theme-btn').addEventListener('click', () => switchTheme(themeBtn));
+
+    // 저장된 테마 → 없으면 OS 설정을 따름
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('wos-theme'); } catch (_) {}
+    if ((savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light') switchTheme(null);
+
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const scrollBehavior = () => (prefersReduced.matches ? 'auto' : 'smooth');
+
+    // Haptic 스위치 연동
+    (function () {
+      const sw = document.getElementById('haptic-switch');
+      const note = document.getElementById('haptic-note');
+      let on = true;
+      try { on = localStorage.getItem('wos-haptics') !== '0'; } catch (_) {}
+      if (!on) { sw._wosDrag?.set(0, false); sw.setAttribute('aria-checked', 'false'); }
+      if (typeof navigator.vibrate !== 'function') note.textContent = '이 기기·브라우저는 진동을 지원하지 않아요 (Android Chrome 등에서 동작)';
+      sw.addEventListener('wos-change', (e) => WaveOSUI.setHaptics(e.detail.index === 1));
+    })();
+
+    // 하단 독: 탭 → 섹션 이동, 검색 → Enter 로 해당 섹션 이동 + 강조
+    (function () {
+      const dock = document.getElementById('kit-dock');
+      const tabs = [...dock.querySelectorAll('.wos-tab-item')];
+      dock.addEventListener('wos-change', (e) => {
+        const id = tabs[e.detail.index]?.dataset.goto;
+        if (!id) return;
+        if (id === 'top') window.scrollTo({ top: 0, behavior: scrollBehavior() });
+        else document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+      });
+
+      const search = document.getElementById('kit-search');
+      const cards = [...document.querySelectorAll('.kit-section-card')].map((el) => ({ el, text: el.textContent.toLowerCase() }));
+      search.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const q = search.value.trim().toLowerCase();
+        if (!q) return;
+        const hit = cards.find((c) => c.text.includes(q));
+        if (!hit) { WaveOSUI.toast(`"${search.value.trim()}" 검색 결과가 없어요`, { type: 'warn' }); WaveOSUI.shake(search); return; }
+        search.blur();
+        hit.el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+        hit.el.classList.remove('kit-pulse');
+        void hit.el.offsetWidth;
+        hit.el.classList.add('kit-pulse');
+        hit.el.addEventListener('animationend', () => hit.el.classList.remove('kit-pulse'), { once: true });
+      });
+    })();
+
+    // 폼 검증 데모
+    (function () {
+      const form = document.getElementById('demo-form');
+      const fields = [...form.querySelectorAll('[data-field]')];
+      const ctrlOf = (f) => f.querySelector('input,select,textarea');
+      const hintOf = (f) => f.querySelector('[data-wos-hint]');
+      fields.forEach((f) => { hintOf(f).dataset.default = hintOf(f).textContent; });
+      function setState(f, bad) {
+        const c = ctrlOf(f);
+        if (bad) f.dataset.state = 'error'; else f.removeAttribute('data-state');
+        c.setAttribute('aria-invalid', String(bad));
+        hintOf(f).textContent = bad ? (c.dataset.error || c.validationMessage) : hintOf(f).dataset.default;
+      }
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let first = null;
+        fields.forEach((f) => {
+          const c = ctrlOf(f), bad = !c.checkValidity();
+          setState(f, bad);
+          if (bad) { WaveOSUI.shake(c); first = first || c; }
+        });
+        if (first) { first.focus(); WaveOSUI.toast('입력 내용을 확인해 주세요', { type: 'error' }); return; }
+        WaveOSUI.toast('제출되었습니다 (데모)', { type: 'success' });
+        form.reset();
+      });
+      const live = (e) => {
+        const f = e.target.closest('[data-field]');
+        if (f && f.dataset.state === 'error') setState(f, !e.target.checkValidity());
+      };
+      form.addEventListener('input', live);
+      form.addEventListener('change', live);
+      form.addEventListener('reset', () => fields.forEach((f) => {
+        ctrlOf(f).removeAttribute('aria-invalid');
+        f.removeAttribute('data-state');
+        hintOf(f).textContent = hintOf(f).dataset.default;
+      }));
+    })();
+
+    document.getElementById('copy-quickstart-btn').addEventListener('click', () => {
+      copyText(document.getElementById('kit-quickstart').textContent, '📋 Quick Start 코드가 복사되었습니다!');
+    });
+
+    // 스크롤 리빌 (카드가 화면에 들어올 때 부드럽게 등장)
+    (function () {
+      const els = [...document.querySelectorAll('.kit-header, .kit-section-card')];
+      els.forEach((el) => el.classList.add('kit-reveal'));
+      if (!('IntersectionObserver' in window) || prefersReduced.matches) { els.forEach((el) => el.classList.add('in')); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.filter((en) => en.isIntersecting).forEach((en, i) => {
+          en.target.style.setProperty('--d', `${i * 70}ms`);
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        });
+      }, { threshold: 0.06, rootMargin: '0px 0px -4% 0px' });
+      els.forEach((el) => io.observe(el));
+    })();
+
+    document.getElementById('demo-min-dock-btn').addEventListener('click', () => {
+      const tw = document.querySelector('[data-wos-tabwrap]');
+      if (tw) tw.classList.toggle('min');
+    });
+
+    // 08. 로딩 시뮬레이션: 스켈레톤 → 진행률 → 실제 콘텐츠
+    (function () {
+      const btn = document.getElementById('demo-load-btn');
+      const bar = document.getElementById('demo-progress');
+      const val = document.getElementById('demo-progress-val');
+      const ring = document.getElementById('demo-ring');
+      const ringVal = document.getElementById('demo-ring-val');
+      const area = document.getElementById('demo-skeleton-area');
+      const skeletonHTML = area.innerHTML;
+      let timer = 0;
+      function setProgress(p) {
+        const pct = Math.round(p * 100);
+        bar.style.setProperty('--v', p);
+        bar.setAttribute('aria-valuenow', pct);
+        val.textContent = pct + '%';
+        ring.style.setProperty('--wos-ring-v', p);
+        ring.setAttribute('aria-valuenow', pct);
+        ringVal.textContent = pct + '%';
+      }
+      function run() {
+        clearInterval(timer);
+        area.innerHTML = skeletonHTML;
+        area.setAttribute('aria-busy', 'true');
+        btn.disabled = true;
+        let p = 0;
+        setProgress(0);
+        timer = setInterval(() => {
+          p = Math.min(1, p + 0.04 + Math.random() * 0.08);
+          setProgress(p);
+          if (p >= 1) {
+            clearInterval(timer);
+            btn.disabled = false;
+            area.removeAttribute('aria-busy');
+            area.innerHTML = '<div style="width:52px;height:52px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;font-size:24px;background:var(--wos-gradient-primary);">🌊</div>' +
+              '<div style="min-width:0;"><b>WAVE OS 3.0</b><div style="font-size:12.5px;color:var(--wos-fg-sub);">콘텐츠 로드가 완료되었습니다.</div></div>';
+            WaveOSUI.toast('로드 완료', { type: 'success' });
+          }
+        }, 160);
+      }
+      btn.addEventListener('click', run);
+      setProgress(0.0);
+      setTimeout(() => setProgress(0.35), 400);
+    })();
+
+    document.getElementById('toggle-heritage-demo').addEventListener('click', (e) => {
+      const root = document.documentElement;
+      const isOn = root.getAttribute('data-heritage') === 'eric1013';
+      if (isOn) root.removeAttribute('data-heritage');
+      else root.setAttribute('data-heritage', 'eric1013');
+      e.currentTarget.querySelector('span:last-child').textContent = !isOn ? 'ON' : 'OFF';
+      notifyCopy(!isOn ? '⚡ ERIC1013 헤리티지 아우라 ON' : '✦ 기본 크라이오 글래스 모드');
+    });
+  </script>
+</body>
+</html>
