@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid Floating Dynamic Navigation Bars</title>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      color: inherit;
+    }
+
+    :root {
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --spring-physics: cubic-bezier(0.2, 0.85, 0.28, 1.15);
+      --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    body {
+      font-family: var(--font-family);
+      width: 100vw;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #dcd3c9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      user-select: none;
+      touch-action: none;
+    }
+
+    /* ================================================================= */
+    /* REALISTIC INTERIOR LIVING ROOM BACKGROUND (Matching Video 1:1)    */
+    /* ================================================================= */
+    .scene-background {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 30%, #e8e0d7 0%, #cac0b4 100%);
+    }
+
+    .scene-wall {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70%;
+      background: linear-gradient(180deg, #d8cfc5 0%, #e2d9cf 70%, #ebdcca 100%);
+      box-shadow: inset 0 -30px 50px -15px rgba(0,0,0,0.05);
+    }
+
+    .wall-glow {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 820px;
+      height: 380px;
+      background: radial-gradient(ellipse at center, rgba(255, 245, 230, 0.6) 0%, rgba(255, 245, 230, 0) 70%);
+      filter: blur(40px);
+    }
+
+    .scene-tv {
+      position: absolute;
+      top: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(860px, 94vw);
+      height: 390px;
+      background: linear-gradient(150deg, #1e2025 0%, #0d0e12 100%);
+      border-radius: 14px;
+      border: 3.5px solid #23252c;
+      box-shadow: 
+        0 35px 80px -15px rgba(0, 0, 0, 0.5),
+        0 10px 25px rgba(0, 0, 0, 0.3),
+        inset 0 0 100px rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+    }
+
+    .scene-tv::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 50%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.025) 100%);
+      transform: skewX(-20deg);
+    }
+
+    .scene-cabinet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, #be9f80 0%, #aa8b6d 100%);
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.18);
+      display: flex;
+      justify-content: center;
+    }
+
+    .cabinet-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background: linear-gradient(90deg, #a38466 0%, #c4a382 50%, #a38466 100%);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.22);
+    }
+
+    .cabinet-seam {
+      position: absolute;
+      top: 14px;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .decor-vase {
+      position: absolute;
+      bottom: 29%;
+      left: max(5%, calc(50% - 440px));
+      width: 44px;
+      height: 78px;
+      background: linear-gradient(135deg, #2a2a2d 0%, #161719 100%);
+      border-radius: 14px 14px 4px 4px;
+      box-shadow: 5px 14px 22px rgba(0,0,0,0.35);
+    }
+
+    .decor-vase::after {
+      content: '';
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 7px;
+      height: 26px;
+      background: #473a2f;
+      border-radius: 4px;
+    }
+
+    .decor-books {
+      position: absolute;
+      bottom: 29%;
+      left: max(11%, calc(50% - 370px));
+      width: 70px;
+      height: 18px;
+      background: #eae4dd;
+      border-radius: 2px;
+      box-shadow: 4px 8px 16px rgba(0,0,0,0.22);
+    }
+
+    .decor-plant {
+      position: absolute;
+      bottom: 29%;
+      right: max(6%, calc(50% - 450px));
+      width: 36px;
+      height: 52px;
+      background: linear-gradient(135deg, #eee8df 0%, #d5cdc0 100%);
+      border-radius: 4px;
+      box-shadow: 6px 12px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ================================================================= */
+    /* MAIN FLOATING UI STAGE                                            */
+    /* ================================================================= */
+    .stage-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      padding: 24px 20px;
+    }
+
+    /* Top Controls */
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(16px);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      color: #3f3f46;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      margin-bottom: -10px;
+    }
+
+    .sound-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #3f3f46;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      padding: 5px 13px;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+    }
+    .sound-toggle:hover {
+      background: rgba(255, 255, 255, 0.85);
+      transform: scale(1.03);
+    }
+
+    .theme-toggle-btn {
+      background: #18181b;
+      color: #fff;
+      border: none;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-toggle-btn:hover {
+      transform: scale(1.04);
+      background: #000;
+    }
+
+    /* Interactive Instruction Badge */
+    .slide-hint-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e1b4b;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 7px 18px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .slide-hint-badge i {
+      animation: nudgeX 2s infinite ease-in-out;
+    }
+
+    @keyframes nudgeX {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+
+    /* ================================================================= */
+    /* 1. TOP NAVIGATION BAR (Frosted Capsule + Jet Black Fluid Pill) */
+    /* ================================================================= */
+    .top-nav-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .top-nav {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 7px;
+      border-radius: 9999px;
+      background: rgba(246, 245, 243, 0.55);
+      backdrop-filter: blur(32px) saturate(190%);
+      -webkit-backdrop-filter: blur(32px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 
+        0 18px 40px -10px rgba(0, 0, 0, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .top-nav.is-sliding {
+      cursor: col-resize;
+    }
+
+    /* Sliding & Fluid Stretching Black Indicator Pill */
+    .top-nav-indicator {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      height: calc(100% - 12px);
+      background: linear-gradient(180deg, #1b1c20 0%, #0e0f11 100%);
+      border-radius: 9999px;
+      z-index: 1;
+      pointer-events: none;
+      box-shadow: 
+        0 5px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.46s var(--spring-physics),
+                  width 0.46s var(--spring-physics);
+      will-change: transform, width;
+      transform-origin: center center;
+    }
+
+    .top-nav.is-sliding .top-nav-indicator {
+      transition: none !important; /* Immediate 1:1 scrubbing with pointer */
+    }
+
+    .top-nav-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      color: #1e1e24;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s ease, transform 0.15s ease;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none; /* Let the container handle slide scrubbing */
+    }
+
+    .top-nav-item svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.1;
+      stroke: currentColor;
+      transition: stroke 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .top-nav-item.active {
+      color: #ffffff;
+    }
+
+    .top-nav-item.active svg {
+      stroke: #ffffff;
+      transform: scale(1.05);
+    }
+
+    .top-nav-item:not(.active) {
+      color: #2c2d35;
+    }
+
+    /* ================================================================= */
+    /* 2. BOTTOM NAVIGATION BAR (Dynamic Expanding Capsule + Cart)       */
+    /* ================================================================= */
+    .bottom-nav-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      justify-content: center;
+    }
+
+    .bottom-nav {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 6px;
+      border-radius: 9999px;
+      background: rgba(246, 244, 240, 0.72);
+      backdrop-filter: blur(28px) saturate(170%);
+      -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 
+        0 16px 36px -8px rgba(0, 0, 0, 0.16),
+        0 4px 10px rgba(0, 0, 0, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 1);
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .bottom-nav.is-sliding {
+      cursor: col-resize;
+    }
+
+    /* Sliding & Fluid Stretching Elevated White Indicator Pill */
+    .bottom-nav-indicator {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      height: calc(100% - 10px);
+      background: linear-gradient(180deg, #ffffff 0%, #f7f6f3 100%);
+      border-radius: 9999px;
+      z-index: 1;
+      pointer-events: none;
+      box-shadow: 
+        0 4px 16px -2px rgba(0, 0, 0, 0.16),
+        0 2px 5px rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      transition: transform 0.44s var(--spring-physics),
+                  width 0.44s var(--spring-physics);
+      will-change: transform, width;
+      transform-origin: center center;
+    }
+
+    .bottom-nav.is-sliding .bottom-nav-indicator {
+      transition: none !important;
+    }
+
+    .bottom-nav-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      width: 48px;
+      padding: 0;
+      border-radius: 9999px;
+      color: #3c3d47;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      transition: color 0.25s ease, width 0.44s var(--spring-physics), transform 0.15s ease;
+      overflow: hidden;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none; /* Let container handle scrubbing */
+    }
+
+    .bottom-nav-item svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 2.2;
+      stroke: currentColor;
+      flex-shrink: 0;
+      transition: stroke 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bottom-nav-item .label {
+      opacity: 0;
+      max-width: 0;
+      margin-left: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.25s ease,
+                  max-width 0.44s var(--spring-physics),
+                  margin-left 0.44s var(--spring-physics),
+                  transform 0.44s var(--spring-physics);
+      pointer-events: none;
+      display: inline-block;
+      overflow: hidden;
+    }
+
+    .bottom-nav-item.active {
+      color: #0f1013;
+      width: var(--active-width, 108px);
+    }
+
+    .bottom-nav-item.active .label {
+      opacity: 1;
+      max-width: 90px;
+      margin-left: 8px;
+      transform: translateX(0);
+    }
+
+    .bottom-nav-item.active svg {
+      transform: scale(1.08);
+      stroke: #0f1013;
+    }
+
+    .bottom-nav-item:not(.active):hover {
+      color: #111115;
+    }
+
+    /* Floating Cart Button */
+    .floating-cart-btn {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(246, 244, 240, 0.72);
+      backdrop-filter: blur(28px) saturate(170%);
+      -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #26272e;
+      box-shadow: 
+        0 16px 36px -8px rgba(0, 0, 0, 0.16),
+        0 4px 10px rgba(0, 0, 0, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 1);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background 0.2s ease;
+    }
+
+    .floating-cart-btn:hover {
+      transform: scale(1.08) translateY(-2px);
+      box-shadow: 0 18px 40px -6px rgba(0, 0, 0, 0.22);
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+    }
+
+    .floating-cart-btn:active {
+      transform: scale(0.92);
+    }
+
+    .floating-cart-btn svg {
+      width: 21px;
+      height: 21px;
+      stroke-width: 2.1;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #e04444;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(224, 68, 68, 0.5);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .floating-cart-btn:hover .cart-badge {
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    /* ================================================================= */
+    /* INTERACTIVE STATUS TOAST & ACTION PANEL                           */
+    /* ================================================================= */
+    .status-toast {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      padding: 16px 26px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      max-width: 480px;
+      width: 90%;
+      transition: all 0.3s ease;
+    }
+
+    .status-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #111113;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .status-text {
+      flex: 1;
+    }
+
+    .status-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #18181b;
+      margin-bottom: 2px;
+    }
+
+    .status-desc {
+      font-size: 12.5px;
+      color: #64748b;
+    }
+
+    .export-card {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pill-action-btn {
+      background: rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 9999px;
+      padding: 7px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #27272a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .pill-action-btn:hover {
+      background: rgba(0, 0, 0, 0.12);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .top-nav {
+        padding: 4px 5px;
+        transform: scale(0.9);
+      }
+      .top-nav-item {
+        padding: 8px 11px;
+        font-size: 13px;
+        gap: 6px;
+      }
+      .top-nav-item svg {
+        width: 16px;
+        height: 16px;
+      }
+      .bottom-nav-container {
+        gap: 10px;
+        transform: scale(0.92);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Realistic Living Room Interior Scene Background -->
+  <div class="scene-background" id="sceneBackground">
+    <div class="scene-wall"></div>
+    <div class="wall-glow"></div>
+    <div class="scene-tv"></div>
+    <div class="scene-cabinet">
+      <div class="cabinet-top"></div>
+      <div class="cabinet-seam"></div>
+      <div class="decor-vase"></div>
+      <div class="decor-books"></div>
+      <div class="decor-plant"></div>
+    </div>
+  </div>
+
+  <!-- Interactive Stage -->
+  <div class="stage-container">
+
+    <!-- Top Controls: Sound & Background Scene Switcher -->
+    <div class="top-controls">
+      <span>✨ Liquid Slide Scrubbing Navbars</span>
+      <button class="sound-toggle" id="soundToggle" title="햅틱 사운드 토글">
+        <i data-lucide="volume-2" style="width:14px;height:14px;"></i>
+        <span>Haptic Sound ON</span>
+      </button>
+      <button class="theme-toggle-btn" id="bgToggle">
+        <i data-lucide="sun" style="width:13px;height:13px;"></i>
+        <span>배경 변경</span>
+      </button>
+    </div>
+
+    <!-- Liquid Slide Gesture Instruction Badge -->
+    <div class="slide-hint-badge">
+      <i data-lucide="arrow-left-right" style="width:15px;height:15px;stroke:#4338ca;"></i>
+      <span><strong>탭바 위를 마우스나 손가락으로 좌우로 슬라이드(Slide)해보세요!</strong> 액체처럼 유동적으로 늘어나며 따라옵니다</span>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 1. TOP NAVIGATION BAR (Frosted Capsule + Jet Black Fluid Pill) -->
+    <!-- ============================================================== -->
+    <div class="top-nav-wrapper">
+      <nav class="top-nav" id="topNav">
+        <!-- Fluid Sliding Black Capsule Indicator -->
+        <div class="top-nav-indicator" id="topNavIndicator"></div>
+
+        <button class="top-nav-item" data-id="user" data-index="0">
+          <i data-lucide="user"></i>
+          <span>User</span>
+        </button>
+
+        <button class="top-nav-item active" data-id="overview" data-index="1">
+          <i data-lucide="layout-grid"></i>
+          <span>Overview</span>
+        </button>
+
+        <button class="top-nav-item" data-id="projects" data-index="2">
+          <i data-lucide="folder"></i>
+          <span>Projects</span>
+        </button>
+
+        <button class="top-nav-item" data-id="alerts" data-index="3">
+          <i data-lucide="bell"></i>
+          <span>Alerts</span>
+        </button>
+
+        <button class="top-nav-item" data-id="settings" data-index="4">
+          <i data-lucide="sliders"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. BOTTOM NAVIGATION BAR (Dynamic Expanding Capsule + Cart)    -->
+    <!-- ============================================================== -->
+    <div class="bottom-nav-container">
+      <nav class="bottom-nav" id="bottomNav">
+        <!-- Fluid Sliding White Elevated Capsule Indicator -->
+        <div class="bottom-nav-indicator" id="bottomNavIndicator"></div>
+
+        <button class="bottom-nav-item active" data-id="home" data-index="0">
+          <i data-lucide="home"></i>
+          <span class="label">Home</span>
+        </button>
+
+        <button class="bottom-nav-item" data-id="search" data-index="1">
+          <i data-lucide="search"></i>
+          <span class="label">Search</span>
+        </button>
+
+        <button class="bottom-nav-item" data-id="saved" data-index="2">
+          <i data-lucide="heart"></i>
+          <span class="label">Saved</span>
+        </button>
+
+        <button class="bottom-nav-item" data-id="notifications" data-index="3">
+          <i data-lucide="bell"></i>
+          <span class="label">Alerts</span>
+        </button>
+      </nav>
+
+      <!-- Separate Floating Action Cart Button with Red Notification Badge -->
+      <button class="floating-cart-btn" id="cartBtn" title="Shopping Cart">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-badge" id="cartCount">3</span>
+      </button>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- Real-time Interactive Status Toast                             -->
+    <!-- ============================================================== -->
+    <div class="status-toast" id="statusToast">
+      <div class="status-avatar" id="statusIcon">
+        <i data-lucide="layout-grid" style="width:20px;height:20px;stroke:#fff;"></i>
+      </div>
+      <div class="status-text">
+        <div class="status-title" id="statusTitle">Overview Selected</div>
+        <div class="status-desc" id="statusDesc">상단: Overview / 하단: Home (클릭 또는 탭바 위 슬라이드 제스처 지원)</div>
+      </div>
+    </div>
+
+    <!-- Quick Action / Demo Buttons -->
+    <div class="export-card">
+      <button class="pill-action-btn" id="demoPlayBtn">
+        <i data-lucide="play" style="width:14px;height:14px;"></i>
+        <span>비디오 동작 자동 재생 데모</span>
+      </button>
+      <button class="pill-action-btn" id="copySnippetBtn">
+        <i data-lucide="code" style="width:14px;height:14px;"></i>
+        <span>React / HTML 컴포넌트 코드 복사</span>
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Sound Synthesizer via Web Audio API (tactile click)
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function playHapticSound(type = 'click') {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(820, now + 0.06);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        } else if (type === 'liquid') {
+          // Subtle fluid tick when sliding across tabs
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(560, now + 0.04);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else {
+          // Standard tactile click
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(340, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.04);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        }
+      } catch (e) {}
+    }
+
+    // Toggle Sound
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.innerHTML = soundEnabled 
+        ? `<i data-lucide="volume-2" style="width:14px;height:14px;"></i><span>Haptic Sound ON</span>`
+        : `<i data-lucide="volume-x" style="width:14px;height:14px;"></i><span>Haptic Sound OFF</span>`;
+      lucide.createIcons();
+      playHapticSound('pop');
+    });
+
+    /* ============================================================== */
+    /* 1. TOP NAV INTERACTION: SLIDE SCRUBBING ACROSS TABS            */
+    /* ============================================================== */
+    const topNav = document.getElementById('topNav');
+    const topIndicator = document.getElementById('topNavIndicator');
+    const topItems = Array.from(document.querySelectorAll('.top-nav-item'));
+
+    let currentTopIndex = 1; // 'Overview' initially
+    let topTabsData = [];
+
+    function measureTopTabs() {
+      const navRect = topNav.getBoundingClientRect();
+      topTabsData = topItems.map((item, idx) => {
+        const r = item.getBoundingClientRect();
+        const left = r.left - navRect.left;
+        const width = r.width;
+        return {
+          index: idx,
+          left: left,
+          width: width,
+          center: left + width / 2
+        };
+      });
+    }
+
+    function snapTopToTab(index, animate = true) {
+      if (index < 0 || index >= topItems.length) return;
+      currentTopIndex = index;
+      const tab = topTabsData[index];
+
+      topIndicator.style.transition = animate ? 'transform 0.46s var(--spring-physics), width 0.46s var(--spring-physics)' : 'none';
+      topIndicator.style.transform = `translateX(${tab.left}px) scale(1, 1)`;
+      topIndicator.style.width = `${tab.width}px`;
+
+      topItems.forEach((item, idx) => {
+        if (idx === index) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+    }
+
+    // SLIDE GESTURE ON TOP NAV
+    let isSlidingTop = false;
+
+    topNav.addEventListener('pointerdown', (e) => {
+      topNav.setPointerCapture(e.pointerId);
+      isSlidingTop = true;
+      topNav.classList.add('is-sliding');
+      measureTopTabs();
+      handleTopSlide(e.clientX);
+    });
+
+    topNav.addEventListener('pointermove', (e) => {
+      if (!isSlidingTop) return;
+      handleTopSlide(e.clientX);
+    });
+
+    function handleTopSlide(clientX) {
+      const navRect = topNav.getBoundingClientRect();
+      const x = clientX - navRect.left;
+
+      // Find segment between tabs
+      let targetLeft = 0;
+      let targetWidth = 0;
+      let closestIdx = 0;
+
+      if (x <= topTabsData[0].center) {
+        // At or before first tab
+        targetLeft = topTabsData[0].left;
+        targetWidth = topTabsData[0].width;
+        closestIdx = 0;
+      } else if (x >= topTabsData[topTabsData.length - 1].center) {
+        // At or beyond last tab
+        const last = topTabsData[topTabsData.length - 1];
+        targetLeft = last.left;
+        targetWidth = last.width;
+        closestIdx = topTabsData.length - 1;
+      } else {
+        // Between tab i and tab i+1
+        for (let i = 0; i < topTabsData.length - 1; i++) {
+          const t1 = topTabsData[i];
+          const t2 = topTabsData[i + 1];
+          if (x >= t1.center && x <= t2.center) {
+            const progress = (x - t1.center) / (t2.center - t1.center);
+            
+            // LIQUID STRETCH FORMULA: Pill stretches out like water/fluid in the middle of sliding!
+            const liquidStretch = Math.sin(progress * Math.PI) * 22; // up to 22px fluid elongation
+            const interpLeft = (1 - progress) * t1.left + progress * t2.left;
+            const interpWidth = (1 - progress) * t1.width + progress * t2.width;
+
+            targetWidth = interpWidth + liquidStretch;
+            targetLeft = interpLeft - liquidStretch / 2;
+
+            closestIdx = progress < 0.5 ? i : i + 1;
+            break;
+          }
+        }
+      }
+
+      // Smooth fluid tracking without CSS transition lag during sliding
+      topIndicator.style.transform = `translateX(${targetLeft}px)`;
+      topIndicator.style.width = `${targetWidth}px`;
+
+      if (closestIdx !== currentTopIndex) {
+        currentTopIndex = closestIdx;
+        topItems.forEach((item, idx) => {
+          if (idx === closestIdx) item.classList.add('active');
+          else item.classList.remove('active');
+        });
+        playHapticSound('liquid');
+      }
+    }
+
+    function finishTopSlide() {
+      if (!isSlidingTop) return;
+      isSlidingTop = false;
+      topNav.classList.remove('is-sliding');
+      snapTopToTab(currentTopIndex, true);
+      playHapticSound('pop');
+      const target = topItems[currentTopIndex];
+      updateStatusToast('top', target.getAttribute('data-id'), target.querySelector('span').innerText);
+    }
+
+    topNav.addEventListener('pointerup', finishTopSlide);
+    topNav.addEventListener('pointercancel', finishTopSlide);
+
+    /* ============================================================== */
+    /* 2. BOTTOM NAV INTERACTION: SLIDE SCRUBBING ACROSS TABS         */
+    /* ============================================================== */
+    const bottomNav = document.getElementById('bottomNav');
+    const bottomIndicator = document.getElementById('bottomNavIndicator');
+    const bottomItems = Array.from(document.querySelectorAll('.bottom-nav-item'));
+
+    const INACTIVE_ITEM_WIDTH = 48;
+    const NAV_INNER_PADDING = 6;
+    const bottomTabsMeta = [];
+    let currentBottomIndex = 0; // 'Home' initially
+
+    function initBottomTabs() {
+      bottomItems.forEach((item, index) => {
+        const label = item.querySelector('.label');
+        label.style.maxWidth = 'none';
+        label.style.opacity = '0';
+        label.style.position = 'absolute';
+        label.style.visibility = 'hidden';
+        document.body.appendChild(label);
+        const textWidth = label.getBoundingClientRect().width;
+        item.appendChild(label);
+        label.removeAttribute('style');
+
+        const activeWidth = Math.round(19 + 8 + textWidth + 38);
+        item.style.setProperty('--active-width', `${activeWidth}px`);
+
+        bottomTabsMeta[index] = {
+          inactiveWidth: INACTIVE_ITEM_WIDTH,
+          activeWidth: activeWidth
+        };
+      });
+    }
+
+    function getBottomLayoutForIndex(targetIdx) {
+      let left = NAV_INNER_PADDING;
+      for (let i = 0; i < targetIdx; i++) {
+        left += bottomTabsMeta[i].inactiveWidth;
+      }
+      return {
+        left: left,
+        width: bottomTabsMeta[targetIdx].activeWidth,
+        center: left + bottomTabsMeta[targetIdx].activeWidth / 2
+      };
+    }
+
+    function snapBottomToTab(index, animate = true) {
+      if (index < 0 || index >= bottomItems.length) return;
+      currentBottomIndex = index;
+      const layout = getBottomLayoutForIndex(index);
+
+      bottomIndicator.style.transition = animate ? 'transform 0.44s var(--spring-physics), width 0.44s var(--spring-physics)' : 'none';
+      bottomIndicator.style.transform = `translateX(${layout.left}px)`;
+      bottomIndicator.style.width = `${layout.width}px`;
+
+      bottomItems.forEach((item, idx) => {
+        if (idx === index) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+    }
+
+    // SLIDE GESTURE ON BOTTOM NAV
+    let isSlidingBottom = false;
+
+    bottomNav.addEventListener('pointerdown', (e) => {
+      bottomNav.setPointerCapture(e.pointerId);
+      isSlidingBottom = true;
+      bottomNav.classList.add('is-sliding');
+      handleBottomSlide(e.clientX);
+    });
+
+    bottomNav.addEventListener('pointermove', (e) => {
+      if (!isSlidingBottom) return;
+      handleBottomSlide(e.clientX);
+    });
+
+    function handleBottomSlide(clientX) {
+      const navRect = bottomNav.getBoundingClientRect();
+      const x = clientX - navRect.left;
+
+      // Calculate relative position across tabs
+      const firstLayout = getBottomLayoutForIndex(0);
+      const lastLayout = getBottomLayoutForIndex(bottomItems.length - 1);
+
+      let closestIdx = 0;
+      let minDiff = Infinity;
+
+      for (let i = 0; i < bottomItems.length; i++) {
+        const layout = getBottomLayoutForIndex(i);
+        const diff = Math.abs(x - layout.center);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = i;
+        }
+      }
+
+      // Calculate continuous progress between tab i and tab i+1 for fluid stretch
+      let targetLeft = 0;
+      let targetWidth = 0;
+
+      if (x <= firstLayout.center) {
+        targetLeft = firstLayout.left;
+        targetWidth = firstLayout.width;
+      } else if (x >= lastLayout.center) {
+        targetLeft = lastLayout.left;
+        targetWidth = lastLayout.width;
+      } else {
+        // Interpolate between the two nearest tab centers
+        for (let i = 0; i < bottomItems.length - 1; i++) {
+          const l1 = getBottomLayoutForIndex(i);
+          const l2 = getBottomLayoutForIndex(i + 1);
+          if (x >= l1.center && x <= l2.center) {
+            const progress = (x - l1.center) / (l2.center - l1.center);
+            const liquidStretch = Math.sin(progress * Math.PI) * 20;
+
+            const interpLeft = (1 - progress) * l1.left + progress * l2.left;
+            const interpWidth = (1 - progress) * l1.width + progress * l2.width;
+
+            targetLeft = interpLeft - liquidStretch / 2;
+            targetWidth = interpWidth + liquidStretch;
+            break;
+          }
+        }
+      }
+
+      bottomIndicator.style.transform = `translateX(${targetLeft}px)`;
+      bottomIndicator.style.width = `${targetWidth}px`;
+
+      if (closestIdx !== currentBottomIndex) {
+        currentBottomIndex = closestIdx;
+        bottomItems.forEach((item, idx) => {
+          if (idx === closestIdx) item.classList.add('active');
+          else item.classList.remove('active');
+        });
+        playHapticSound('liquid');
+      }
+    }
+
+    function finishBottomSlide() {
+      if (!isSlidingBottom) return;
+      isSlidingBottom = false;
+      bottomNav.classList.remove('is-sliding');
+      snapBottomToTab(currentBottomIndex, true);
+      playHapticSound('pop');
+      const target = bottomItems[currentBottomIndex];
+      updateStatusToast('bottom', target.getAttribute('data-id'), target.querySelector('.label').innerText);
+    }
+
+    bottomNav.addEventListener('pointerup', finishBottomSlide);
+    bottomNav.addEventListener('pointercancel', finishBottomSlide);
+
+    /* ============================================================== */
+    /* 3. CART FLOATING BUTTON                                        */
+    /* ============================================================== */
+    const cartBtn = document.getElementById('cartBtn');
+    const cartCount = document.getElementById('cartCount');
+    let count = 3;
+
+    cartBtn.addEventListener('click', () => {
+      count = (count % 9) + 1;
+      cartCount.innerText = count;
+      playHapticSound('pop');
+      cartBtn.style.transform = 'scale(1.24) rotate(-10deg)';
+      setTimeout(() => {
+        cartBtn.style.transform = '';
+      }, 250);
+      updateStatusToast('cart', 'cart', `장바구니 담김: ${count}개`);
+    });
+
+    /* ============================================================== */
+    /* 4. REAL-TIME STATUS FEEDBACK                                   */
+    /* ============================================================== */
+    const statusToast = document.getElementById('statusToast');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDesc = document.getElementById('statusDesc');
+
+    const iconMap = {
+      user: 'user',
+      overview: 'layout-grid',
+      projects: 'folder',
+      alerts: 'bell',
+      settings: 'sliders',
+      home: 'home',
+      search: 'search',
+      saved: 'heart',
+      notifications: 'bell',
+      cart: 'shopping-cart'
+    };
+
+    function updateStatusToast(group, id, label) {
+      const iconName = iconMap[id] || 'check';
+      statusIcon.innerHTML = `<i data-lucide="${iconName}" style="width:20px;height:20px;stroke:#fff;"></i>`;
+      lucide.createIcons();
+
+      const activeTop = document.querySelector('.top-nav-item.active span').innerText;
+      const activeBottom = document.querySelector('.bottom-nav-item.active .label').innerText;
+
+      if (group === 'cart') {
+        statusTitle.innerText = `장바구니 클릭 (${count}개 아이템)`;
+        statusDesc.innerText = `플로팅 액션 카트 버튼이 활성화되었습니다.`;
+      } else if (group === 'top') {
+        statusTitle.innerText = `상단 메뉴: ${label}`;
+        statusDesc.innerText = `상단: ${activeTop} | 하단: ${activeBottom} (탭바 요소 사이 슬라이드 스크러빙)`;
+      } else {
+        statusTitle.innerText = `하단 탭: ${label}`;
+        statusDesc.innerText = `다이내믹 텍스트 확장 및 액체 스트레칭 슬라이드`;
+      }
+
+      statusToast.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        statusToast.style.transform = 'scale(1)';
+      }, 200);
+    }
+
+    /* ============================================================== */
+    /* 5. BACKGROUND TOGGLE (Scene Switcher)                          */
+    /* ============================================================== */
+    const bgToggle = document.getElementById('bgToggle');
+    const sceneBackground = document.getElementById('sceneBackground');
+    let bgState = 0;
+
+    const bgStyles = [
+      { name: '실내 인테리어 (비디오 동일)', mode: 'interior' },
+      { name: '미니멀 스튜디오', mode: 'minimal' },
+      { name: '다크 앰비언트', mode: 'dark' }
+    ];
+
+    bgToggle.addEventListener('click', () => {
+      bgState = (bgState + 1) % bgStyles.length;
+      playHapticSound('click');
+      bgToggle.querySelector('span').innerText = bgStyles[bgState].name;
+
+      if (bgState === 0) {
+        sceneBackground.style.display = 'block';
+        document.body.style.backgroundColor = '#dcd3c9';
+      } else if (bgState === 1) {
+        sceneBackground.style.display = 'none';
+        document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #d8e2ee 100%)';
+      } else {
+        sceneBackground.style.display = 'none';
+        document.body.style.background = 'radial-gradient(circle at 50% 40%, #1a1c24 0%, #090a0d 100%)';
+      }
+    });
+
+    /* ============================================================== */
+    /* 6. AUTO PLAY VIDEO DEMO (Recreating the exact user recording)  */
+    /* ============================================================== */
+    const demoPlayBtn = document.getElementById('demoPlayBtn');
+    let isPlayingDemo = false;
+
+    demoPlayBtn.addEventListener('click', async () => {
+      if (isPlayingDemo) return;
+      isPlayingDemo = true;
+      demoPlayBtn.style.opacity = '0.5';
+
+      // 00:00 Initial: Overview active, Home active
+      snapTopToTab(1, true);
+      snapBottomToTab(0, true);
+
+      // 00:01 User slides/clicks 'Saved'
+      await new Promise(r => setTimeout(r, 1100));
+      snapBottomToTab(2, true);
+
+      // 00:03 User slides/clicks 'Home' back
+      await new Promise(r => setTimeout(r, 1500));
+      snapBottomToTab(0, true);
+
+      // 00:04 User slides/clicks 'User' on top bar
+      await new Promise(r => setTimeout(r, 1200));
+      snapTopToTab(0, true);
+
+      // 00:06 User slides/clicks 'Overview' back
+      await new Promise(r => setTimeout(r, 1500));
+      snapTopToTab(1, true);
+
+      isPlayingDemo = false;
+      demoPlayBtn.style.opacity = '1';
+    });
+
+    /* ============================================================== */
+    /* 7. COPY SNIPPET                                                */
+    /* ============================================================== */
+    const copySnippetBtn = document.getElementById('copySnippetBtn');
+    copySnippetBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href);
+      copySnippetBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;stroke:#10b981;"></i><span>경로 복사 완료!</span>`;
+      lucide.createIcons();
+      playHapticSound('pop');
+      setTimeout(() => {
+        copySnippetBtn.innerHTML = `<i data-lucide="code" style="width:14px;height:14px;"></i><span>React / HTML 컴포넌트 코드 복사</span>`;
+        lucide.createIcons();
+      }, 2000);
+    });
+
+    /* ============================================================== */
+    /* INITIAL MOUNT                                                  */
+    /* ============================================================== */
+    window.addEventListener('load', () => {
+      measureTopTabs();
+      initBottomTabs();
+
+      snapTopToTab(1, false); // 1 = Overview
+      snapBottomToTab(0, false); // 0 = Home
+    });
+
+    window.addEventListener('resize', () => {
+      measureTopTabs();
+      initBottomTabs();
+
+      snapTopToTab(currentTopIndex, false);
+      snapBottomToTab(currentBottomIndex, false);
+    });
+  </script>
+</body>
+</html>
