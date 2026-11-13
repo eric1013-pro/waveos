@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Check your phone — Fluid Morphing OTP Verification</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #090a10;
+      --card-bg: rgba(18, 20, 29, 0.92);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.035);
+      --input-border: rgba(255, 255, 255, 0.1);
+      --accent-purple: #8b5cf6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.45);
+      --accent-green: #10b981;
+      --accent-green-glow: rgba(16, 185, 129, 0.5);
+      --accent-red: #f43f5e;
+      --accent-red-glow: rgba(244, 63, 94, 0.45);
+      --smooth-easing: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 18%, rgba(88, 28, 135, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(49, 46, 129, 0.2) 0%, transparent 55%),
+        radial-gradient(circle at 15% 75%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Ambient dynamic glow backdrop */
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(124, 58, 237, 0.16) 0%, transparent 45%);
+      transition: background 0.3s ease;
+    }
+
+    /* Main Modal Card */
+    .otp-card {
+      position: relative;
+      background: var(--card-bg);
+      backdrop-filter: blur(30px) saturate(190%);
+      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      box-shadow: 
+        0 30px 70px -15px rgba(0, 0, 0, 0.85),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: transform 0.4s var(--smooth-easing), box-shadow 0.4s ease;
+      z-index: 10;
+      width: 100%;
+      max-width: 480px;
+      min-height: 380px;
+      overflow: hidden;
+    }
+
+    /* Subtle top glass edge shine */
+    .otp-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* Input Box Styles */
+    .otp-box {
+      position: relative;
+      width: 58px;
+      height: 68px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.22s var(--smooth-easing);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 440px) {
+      .otp-box {
+        width: 48px;
+        height: 58px;
+        font-size: 24px;
+        border-radius: 13px;
+      }
+    }
+
+    /* Active / Focused Box */
+    .otp-box.active {
+      border-color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.08);
+      box-shadow: 
+        0 0 0 1.5px #8b5cf6,
+        0 0 22px rgba(139, 92, 246, 0.45),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Filled Box */
+    .otp-box.filled {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    /* Blinking Caret Indicator */
+    .caret-bar {
+      width: 2.5px;
+      height: 28px;
+      background: #a78bfa;
+      border-radius: 2px;
+      box-shadow: 0 0 8px #a78bfa;
+      animation: caretBlink 1.05s infinite;
+      display: none;
+    }
+
+    .otp-box.active.empty .caret-bar {
+      display: block;
+    }
+
+    @keyframes caretBlink {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0; transform: scaleY(0.85); }
+    }
+
+    /* Error Box Styling */
+    .otp-box.error {
+      border-color: var(--accent-red) !important;
+      color: #fda4af !important;
+      background: rgba(244, 63, 94, 0.08) !important;
+      box-shadow: 0 0 18px rgba(244, 63, 94, 0.4) !important;
+    }
+
+    /* Horizontal Shake Animation */
+    .shake-error {
+      animation: springShake 0.45s var(--smooth-easing);
+    }
+
+    @keyframes springShake {
+      0% { transform: translateX(0); }
+      15% { transform: translateX(-9px); }
+      30% { transform: translateX(8px); }
+      45% { transform: translateX(-6px); }
+      60% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+      90% { transform: translateX(2px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Interactive SVG Bar Stage */
+    .bar-stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    /* Background static track */
+    .static-track {
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    /* Dynamic fluid morphing bar */
+    .fluid-bar {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.25s ease, filter 0.25s ease;
+    }
+
+    /* Secondary cross bar for X-morph */
+    .fluid-cross-bar {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Scanner highlight runner */
+    .scanner-runner {
+      stroke: #ffffff;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 8px #ffffff);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Green Aura Pulse behind checkmark — Seamless, naturally diffused Gaussian Bloom */
+    .success-glow-aura {
+      position: absolute;
+      top: calc(50% - 12px);
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.65);
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(52, 211, 153, 0.32) 0%,
+        rgba(16, 185, 129, 0.22) 25%,
+        rgba(16, 185, 129, 0.12) 48%,
+        rgba(5, 150, 105, 0.04) 70%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      filter: blur(28px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.85s var(--smooth-easing), opacity 0.85s ease;
+      z-index: 12;
+      mix-blend-mode: screen;
+    }
+
+    .success-glow-aura.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    /* Success Info Section */
+    .success-info {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s 0.25s ease, transform 0.5s 0.25s var(--smooth-easing);
+    }
+
+    .success-info.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Continue Button — Luxurious Glass Pill with Shimmer Light Sweep & Ambient Halo */
+    .continue-btn {
+      position: relative;
+      width: 100%;
+      height: 52px;
+      background: #ffffff;
+      color: #090a0f;
+      border-radius: 9999px;
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      cursor: pointer;
+      box-shadow: 
+        0 4px 14px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      transition: box-shadow 0.35s ease, letter-spacing 0.35s ease, transform 0.15s ease, opacity 0.5s ease;
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .continue-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Diagonal Shimmer Light Sweep Effect on Hover */
+    .continue-btn::before {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -65%;
+      width: 45%;
+      height: 220%;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.65) 50%,
+        transparent 80%
+      );
+      transform: rotate(25deg);
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .continue-btn:hover::before {
+      transform: translateX(400%) rotate(25deg);
+      opacity: 1;
+    }
+
+    /* Luxurious Ambient Glow & Subtle Font Tracking (No awkward translateY jumping) */
+    .continue-btn:hover {
+      background: #ffffff;
+      box-shadow: 
+        0 0 28px rgba(255, 255, 255, 0.4),
+        0 0 55px rgba(52, 211, 153, 0.24),
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 1);
+      letter-spacing: 0.015em;
+    }
+
+    /* Tactile Micro-Haptic Click Feel */
+    .continue-btn:active {
+      transform: scale(0.985);
+      box-shadow: 
+        0 0 14px rgba(255, 255, 255, 0.25),
+        0 2px 8px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(0, 0, 0, 0.15);
+    }
+
+    /* iOS Push Notification Banner */
+    .push-notification {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-140px);
+      width: calc(100% - 32px);
+      max-width: 440px;
+      background: rgba(24, 25, 33, 0.88);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px;
+      box-shadow: 
+        0 24px 48px -12px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      padding: 12px 14px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.65s var(--smooth-easing), opacity 0.4s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .push-notification.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .push-app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+      flex-shrink: 0;
+    }
+
+    .fill-btn {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 9999px;
+      padding: 6px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #ffffff;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .fill-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: scale(1.05);
+      box-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
+    }
+
+    .fill-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Hidden Real Input for Keyboard focus */
+    .hidden-input {
+      position: absolute;
+      opacity: 0;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    /* Bottom Control Bar */
+    .demo-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 20, 29, 0.88);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      font-size: 12.5px;
+      max-width: 95vw;
+      overflow-x: auto;
+    }
+
+    .demo-pill {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .demo-pill:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .demo-pill.primary {
+      background: linear-gradient(135deg, #7c3aed, #6366f1);
+      color: #ffffff;
+      border-color: rgba(167, 139, 250, 0.4);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+    }
+
+    .demo-pill.primary:hover {
+      background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5);
+    }
+
+    .demo-pill.active-mode {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient background glow -->
+  <div class="ambient-glow" id="ambientGlow"></div>
+
+  <!-- iOS-Style Messages Push Notification Banner -->
+  <div class="push-notification" id="pushNotification">
+    <div class="push-app-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3C6.477 3 2 6.806 2 11.5C2 13.914 3.165 16.079 5.067 17.587C4.78 19.066 3.96 20.353 3.93 20.402C3.766 20.667 3.86 21.01 4.14 21.144C4.269 21.206 4.414 21.22 4.557 21.182C6.438 20.686 8.016 19.67 8.91 19.018C9.897 19.336 10.932 19.5 12 19.5C17.523 19.5 22 15.694 22 11.5C22 6.806 17.523 3 12 3Z" fill="#ffffff"/>
+      </svg>
+    </div>
+    <div class="flex-1 min-w-0 pr-1">
+      <div class="flex items-center gap-1.5 text-xs text-neutral-400 font-medium leading-none mb-1">
+        <span>Messages</span>
+        <span>•</span>
+        <span>now</span>
+      </div>
+      <div class="text-[13.5px] text-white font-normal truncate leading-snug">
+        <span class="font-bold tracking-wider text-emerald-300">284 615</span> is your sign-in code. Don't share it.
+      </div>
+    </div>
+    <button class="fill-btn" onclick="handleAutoFillClick()">Fill</button>
+  </div>
+
+  <!-- Hidden Native Input -->
+  <input type="text" id="nativeInput" class="hidden-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
+
+  <!-- Main OTP Card -->
+  <div class="otp-card p-8 md:p-10 mx-4" id="otpCard">
+
+    <!-- Fluid Morphing SVG Layer -->
+    <svg class="bar-stage" id="barStage">
+      <!-- Static background track line -->
+      <line id="staticTrackLine" class="static-track" x1="0" y1="0" x2="0" y2="0" />
+      
+      <!-- Primary morphing bar (Straight Line ➔ Elastic Wave ➔ Checkmark ✓) -->
+      <path id="fluidBar" class="fluid-bar" d="" fill="none" stroke="#8b5cf6" stroke-width="3" />
+
+      <!-- Checking scanner runner -->
+      <line id="scannerRunner" class="scanner-runner" x1="0" y1="0" x2="0" y2="0" />
+    </svg>
+
+    <!-- Success Aura Ring -->
+    <div class="success-glow-aura" id="successAura"></div>
+
+    <!-- Header Section -->
+    <div id="headerSection" class="text-center mb-8 transition-opacity duration-300">
+      <h1 class="text-2xl md:text-[26px] font-bold tracking-tight text-white mb-2.5">
+        Check your phone
+      </h1>
+      <p class="text-[14.5px] text-slate-400 font-normal">
+        Enter the 6-digit code we sent to <span class="font-semibold text-slate-200 tracking-wide">+1 415 ••• 0142</span>.
+      </p>
+    </div>
+
+    <!-- Success Title Section (Morphs in when verified) -->
+    <div id="successTitleSection" class="text-center absolute top-10 left-0 right-0 px-8 success-info pointer-events-none">
+      <h2 class="text-2xl md:text-[26px] font-bold tracking-tight text-white mb-2">
+        You're verified
+      </h2>
+      <p class="text-[15px] text-slate-400 font-normal">
+        Your number is confirmed on this device.
+      </p>
+    </div>
+
+    <!-- 6 OTP Boxes Container -->
+    <div class="flex items-center justify-between gap-2 sm:gap-3 px-1 transition-opacity duration-300" id="otpBoxContainer">
+      <div class="otp-box active empty" data-index="0" onclick="focusBox(0)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+      <div class="otp-box empty" data-index="1" onclick="focusBox(1)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+      <div class="otp-box empty" data-index="2" onclick="focusBox(2)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+      <div class="otp-box empty" data-index="3" onclick="focusBox(3)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+      <div class="otp-box empty" data-index="4" onclick="focusBox(4)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+      <div class="otp-box empty" data-index="5" onclick="focusBox(5)">
+        <span class="digit-text"></span>
+        <div class="caret-bar"></div>
+      </div>
+    </div>
+
+    <!-- Spacer representing the bar area -->
+    <div class="h-8 w-full" id="barSpacer"></div>
+
+    <!-- Status / Footer Area -->
+    <div id="footerSection" class="min-h-[44px] flex flex-col items-center justify-center text-center transition-opacity duration-300">
+      <!-- Checking the code... -->
+      <div id="checkingState" class="hidden items-center justify-center gap-2 text-sm text-slate-300 font-medium">
+        <svg class="animate-spin h-4 w-4 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Checking the code...</span>
+      </div>
+
+      <!-- Error Text -->
+      <div id="errorState" class="hidden text-[13.5px] text-rose-400 font-medium flex items-center justify-center gap-1.5">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>That code didn't match. Check the message and try again.</span>
+      </div>
+
+      <!-- Timer / Resend Button -->
+      <div id="timerState" class="flex items-center justify-center gap-2 text-sm text-slate-400">
+        <div class="relative w-4 h-4 flex items-center justify-center">
+          <svg class="w-4 h-4 transform -rotate-90" viewBox="0 0 36 36">
+            <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path id="timerCircle" class="text-purple-400 transition-all duration-1000 ease-linear" stroke-dasharray="100, 100" stroke-dashoffset="0" stroke-linecap="round" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+        </div>
+        <span id="timerText">Resend code in <strong class="font-semibold text-slate-300" id="timerSeconds">0:28</strong></span>
+        <button id="resendBtn" class="hidden text-purple-400 hover:text-purple-300 font-semibold underline underline-offset-4 decoration-purple-400/40" onclick="triggerResend()">
+          Resend code
+        </button>
+      </div>
+    </div>
+
+    <!-- Continue Button (Visible on Success) -->
+    <div class="mt-4 px-2">
+      <button class="continue-btn" id="continueBtn" onclick="resetVerification()">
+        Continue
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Bottom Demo Toolbar -->
+  <div class="demo-bar">
+    <button class="demo-pill primary" onclick="runExactVideoDemo()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <span>비디오 시나리오 자동 재생</span>
+    </button>
+
+    <button class="demo-pill" onclick="simulateWrongCode()">
+      <span>오류 탄성 애니메이션 (284619)</span>
+    </button>
+
+    <button class="demo-pill" onclick="showNotificationBanner()">
+      <span>SMS 알림 띄우기</span>
+    </button>
+
+    <button class="demo-pill" onclick="toggleSound()" id="soundToggleBtn">
+      <span id="soundLabel">소리 켬</span>
+    </button>
+
+    <button class="demo-pill" onclick="resetVerification()">
+      <span>초기화</span>
+    </button>
+  </div>
+
+  <script>
+    // Configuration
+    const CORRECT_CODE = "284615";
+    const WRONG_CODE_DEMO = "284619";
+    const CODE_LENGTH = 6;
+
+    // State
+    let digits = Array(CODE_LENGTH).fill("");
+    let activeIndex = 0;
+    let isChecking = false;
+    let isSuccess = false;
+    let isSoundEnabled = true;
+    let timerValue = 28;
+    const initialTimer = 28;
+    let timerInterval = null;
+
+    // Checkmark Curved Liquid Morph Variables
+    let morphStartTime = 0;
+    const MORPH_DURATION = 900; // Silky smooth, relaxed duration
+    let originP1 = { x: 0, y: 0 };
+    let originPm = { x: 0, y: 0 };
+    let originP2 = { x: 0, y: 0 };
+
+    // Geometry Cache for boxes
+    let boxRects = [];
+    let cardRect = null;
+    let trackY = 0;
+    let trackStartX = 0;
+    let trackEndX = 0;
+
+    // Bar Animation Physics State
+    const barState = {
+      p1: { x: 0, y: 0 },
+      pm: { x: 0, y: 0 },
+      p2: { x: 0, y: 0 },
+      targetP1: { x: 0, y: 0 },
+      targetPm: { x: 0, y: 0 },
+      targetP2: { x: 0, y: 0 },
+      strokeWidth: 3,
+      targetStrokeWidth: 3,
+      color: "#8b5cf6",
+      glowColor: "rgba(139, 92, 246, 0.45)",
+      elasticOffset: 0,
+      elasticVelocity: 0,
+      // Scanner runner
+      scannerActive: false,
+      scannerPos: 0,
+      scannerDir: 1,
+      // Mode morphing
+      mode: "normal", // "normal", "checking", "elastic-error", "x-morph", "checkmark"
+    };
+
+    // DOM Elements
+    const otpCard = document.getElementById('otpCard');
+    const headerSection = document.getElementById('headerSection');
+    const successTitleSection = document.getElementById('successTitleSection');
+    const otpBoxContainer = document.getElementById('otpBoxContainer');
+    const footerSection = document.getElementById('footerSection');
+    const continueBtn = document.getElementById('continueBtn');
+    const successAura = document.getElementById('successAura');
+    const boxes = document.querySelectorAll('.otp-box');
+    const checkingState = document.getElementById('checkingState');
+    const errorState = document.getElementById('errorState');
+    const timerState = document.getElementById('timerState');
+    const timerSeconds = document.getElementById('timerSeconds');
+    const timerCircle = document.getElementById('timerCircle');
+    const resendBtn = document.getElementById('resendBtn');
+    const timerText = document.getElementById('timerText');
+    const pushNotification = document.getElementById('pushNotification');
+    const nativeInput = document.getElementById('nativeInput');
+    const ambientGlow = document.getElementById('ambientGlow');
+
+    // SVG elements
+    const barStage = document.getElementById('barStage');
+    const staticTrackLine = document.getElementById('staticTrackLine');
+    const fluidBar = document.getElementById('fluidBar');
+    const scannerRunner = document.getElementById('scannerRunner');
+
+    // Web Audio Synthesizer
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playKeyClick() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(500, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.035);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.035);
+      } catch (e) {}
+    }
+
+    function playNotificationDing() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        [880, 1174.66].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          gain.gain.setValueAtTime(0.14, now + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    function playErrorThud() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(now + 0.2);
+      } catch (e) {}
+    }
+
+    function playSuccessChime() {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.09);
+          gain.gain.setValueAtTime(0.16, now + i * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.09);
+          osc.stop(now + i * 0.09 + 0.5);
+        });
+      } catch (e) {}
+    }
+
+    // Geometry Calculation
+    function updateLayoutMetrics() {
+      cardRect = otpCard.getBoundingClientRect();
+      boxRects = Array.from(boxes).map(box => {
+        const r = box.getBoundingClientRect();
+        return {
+          left: r.left - cardRect.left,
+          right: r.right - cardRect.left,
+          width: r.width,
+          height: r.height,
+          top: r.top - cardRect.top,
+          bottom: r.bottom - cardRect.top,
+          centerX: (r.left + r.right) / 2 - cardRect.left,
+        };
+      });
+
+      if (boxRects.length > 0) {
+        trackStartX = boxRects[0].left;
+        trackEndX = boxRects[boxRects.length - 1].right;
+        trackY = boxRects[0].bottom + 14;
+
+        // Static track
+        staticTrackLine.setAttribute('x1', trackStartX);
+        staticTrackLine.setAttribute('y1', trackY);
+        staticTrackLine.setAttribute('x2', trackEndX);
+        staticTrackLine.setAttribute('y2', trackY);
+      }
+    }
+
+    // Update Targets based on entered digits
+    function updateBarTargets() {
+      if (barState.mode === 'checkmark' || barState.mode === 'x-morph') return;
+
+      const filledCount = digits.filter(d => d !== "").length;
+      const targetEndIndex = Math.max(0, Math.min(CODE_LENGTH - 1, filledCount === 0 ? 0 : filledCount - 1));
+
+      const x1 = boxRects[0].left;
+      const x2 = filledCount === 0 ? boxRects[0].left + 16 : boxRects[targetEndIndex].right;
+      const xm = (x1 + x2) / 2;
+
+      barState.targetP1.x = x1;
+      barState.targetP1.y = trackY;
+
+      barState.targetPm.x = xm;
+      barState.targetPm.y = trackY;
+
+      barState.targetP2.x = x2;
+      barState.targetP2.y = trackY;
+
+      if (barState.mode === 'elastic-error') {
+        barState.color = "#f43f5e";
+        barState.glowColor = "rgba(244, 63, 94, 0.55)";
+        barState.targetStrokeWidth = 3.5;
+      } else {
+        barState.color = "#8b5cf6";
+        barState.glowColor = "rgba(139, 92, 246, 0.45)";
+        barState.targetStrokeWidth = 3;
+      }
+    }
+
+    // Function to calculate silky smooth rounded-knee checkmark path
+    function getCheckmarkPath(p1, pm, p2, bendProgress) {
+      if (bendProgress <= 0.01) {
+        return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
+      }
+      const v1 = { x: p1.x - pm.x, y: p1.y - pm.y };
+      const v2 = { x: p2.x - pm.x, y: p2.y - pm.y };
+      const len1 = Math.hypot(v1.x, v1.y);
+      const len2 = Math.hypot(v2.x, v2.y);
+      if (len1 < 5 || len2 < 5) {
+        return `M ${p1.x} ${p1.y} L ${pm.x} ${pm.y} L ${p2.x} ${p2.y}`;
+      }
+      // Rounded corner radius expands with bend
+      const r = Math.min(10, len1 * 0.35, len2 * 0.28) * Math.min(1, bendProgress * 1.25);
+      const k1 = { x: pm.x + (v1.x / len1) * r, y: pm.y + (v1.y / len1) * r };
+      const k2 = { x: pm.x + (v2.x / len2) * r, y: pm.y + (v2.y / len2) * r };
+      return `M ${p1.x} ${p1.y} L ${k1.x} ${k1.y} Q ${pm.x} ${pm.y} ${k2.x} ${k2.y} L ${p2.x} ${p2.y}`;
+    }
+
+    // Main 60fps Physics & Render Loop
+    function animationLoop() {
+      // 1. Checkmark mode: Two-Phase Curved Liquid Morph Engine
+      if (barState.mode === 'checkmark') {
+        const elapsed = performance.now() - morphStartTime;
+        const progress = Math.min(1, Math.max(0, elapsed / MORPH_DURATION));
+
+        // Phase 1: Smooth lift & horizontal compression (Cubic ease-out)
+        const liftP = 1 - Math.pow(1 - Math.min(1, progress * 1.45), 3);
+
+        // Phase 2: Gentle Knee Bend & Wing unfold (starts at 18% progress)
+        const bendT = Math.max(0, (progress - 0.18) / 0.82);
+        // Silky smooth easing with subtle cushion
+        const bendP = bendT === 0 ? 0 : 1 - Math.pow(1 - bendT, 3);
+
+        const centerX = cardRect.width / 2;
+        const centerY = cardRect.height / 2 - 12;
+
+        // Target midpoint: straight compact bar in center
+        const midP1 = { x: centerX - 46, y: centerY };
+        const midPm = { x: centerX - 10, y: centerY };
+        const midP2 = { x: centerX + 46, y: centerY };
+
+        // Final target checkmark positions (video match)
+        const finalP1 = { x: centerX - 38, y: centerY - 2 };
+        const finalPm = { x: centerX - 10, y: centerY + 26 };
+        const finalP2 = { x: centerX + 42, y: centerY - 28 };
+
+        // Interpolated positions
+        const curX1 = originP1.x + (midP1.x - originP1.x) * liftP;
+        const curY1 = originP1.y + (midP1.y - originP1.y) * liftP;
+
+        const curXm = originPm.x + (midPm.x - originPm.x) * liftP;
+        const curYm = originPm.y + (midPm.y - originPm.y) * liftP;
+
+        const curX2 = originP2.x + (midP2.x - originP2.x) * liftP;
+        const curY2 = originP2.y + (midP2.y - originP2.y) * liftP;
+
+        barState.p1.x = curX1 + (finalP1.x - midP1.x) * bendP;
+        barState.p1.y = curY1 + (finalP1.y - midP1.y) * bendP;
+
+        barState.pm.x = curXm + (finalPm.x - midPm.x) * bendP;
+        barState.pm.y = curYm + (finalPm.y - midPm.y) * bendP;
+
+        barState.p2.x = curX2 + (finalP2.x - midP2.x) * bendP;
+        barState.p2.y = curY2 + (finalP2.y - midP2.y) * bendP;
+
+        barState.strokeWidth = 3 + (6.8 - 3) * liftP;
+
+        const pathD = getCheckmarkPath(barState.p1, barState.pm, barState.p2, bendP);
+        fluidBar.setAttribute('d', pathD);
+        fluidBar.setAttribute('stroke', '#10b981');
+        fluidBar.setAttribute('stroke-width', barState.strokeWidth);
+        fluidBar.style.filter = `drop-shadow(0 0 10px rgba(52, 211, 153, 0.7)) drop-shadow(0 0 24px rgba(16, 185, 129, 0.4))`;
+      } else {
+        // Standard typing / error modes: Lerp interpolation
+        const lerpSpeed = 0.22;
+        barState.p1.x += (barState.targetP1.x - barState.p1.x) * lerpSpeed;
+        barState.p1.y += (barState.targetP1.y - barState.p1.y) * lerpSpeed;
+
+        barState.pm.x += (barState.targetPm.x - barState.pm.x) * lerpSpeed;
+        barState.pm.y += (barState.targetPm.y - barState.pm.y) * lerpSpeed;
+
+        barState.p2.x += (barState.targetP2.x - barState.p2.x) * lerpSpeed;
+        barState.p2.y += (barState.targetP2.y - barState.p2.y) * lerpSpeed;
+
+        barState.strokeWidth += (barState.targetStrokeWidth - barState.strokeWidth) * lerpSpeed;
+
+        // 2. Elastic Spring Physics for Wobbly String during Error (Plucked guitar string)
+        if (Math.abs(barState.elasticVelocity) > 0.001 || Math.abs(barState.elasticOffset) > 0.001) {
+          const springK = 0.17; // snappy elastic spring
+          const damping = 0.84; // smooth damping
+          const force = -springK * barState.elasticOffset;
+          barState.elasticVelocity = (barState.elasticVelocity + force) * damping;
+          barState.elasticOffset += barState.elasticVelocity;
+        } else {
+          barState.elasticOffset = 0;
+          barState.elasticVelocity = 0;
+        }
+
+        // Render Straight / Elastic Sagging Bar
+        const sagY = barState.pm.y + barState.elasticOffset;
+        fluidBar.setAttribute('d', `M ${barState.p1.x} ${barState.p1.y} Q ${barState.pm.x} ${sagY} ${barState.p2.x} ${barState.p2.y}`);
+        fluidBar.setAttribute('stroke', barState.color);
+        fluidBar.setAttribute('stroke-width', barState.strokeWidth);
+        fluidBar.style.filter = `drop-shadow(0 0 10px ${barState.glowColor})`;
+      }
+
+      // 3. Scanner Runner for "Checking the code..." state (remains slow, smooth, elegant)
+      if (barState.scannerActive) {
+        barState.scannerPos += 0.016 * barState.scannerDir;
+        if (barState.scannerPos > 1) {
+          barState.scannerPos = 1;
+          barState.scannerDir = -1;
+        } else if (barState.scannerPos < 0) {
+          barState.scannerPos = 0;
+          barState.scannerDir = 1;
+        }
+
+        const runWidth = 78;
+        const totalSpan = trackEndX - trackStartX;
+        const currX = trackStartX + totalSpan * barState.scannerPos;
+        const rX1 = Math.max(trackStartX, currX - runWidth / 2);
+        const rX2 = Math.min(trackEndX, currX + runWidth / 2);
+
+        scannerRunner.setAttribute('x1', rX1);
+        scannerRunner.setAttribute('y1', trackY);
+        scannerRunner.setAttribute('x2', rX2);
+        scannerRunner.setAttribute('y2', trackY);
+        scannerRunner.style.opacity = '1';
+      } else {
+        scannerRunner.style.opacity = '0';
+      }
+
+      requestAnimationFrame(animationLoop);
+    }
+
+    // Mode Morphing Functions
+    function morphToCheckmark() {
+      barState.mode = 'checkmark';
+      barState.scannerActive = false;
+      morphStartTime = performance.now();
+
+      // Lock starting points where the bar currently sits
+      originP1 = { x: barState.p1.x, y: barState.p1.y };
+      originPm = { x: barState.pm.x, y: barState.pm.y };
+      originP2 = { x: barState.p2.x, y: barState.p2.y };
+
+      // Visual transitions: gently fade out initial inputs
+      headerSection.style.opacity = '0';
+      otpBoxContainer.style.opacity = '0';
+      footerSection.style.opacity = '0';
+      staticTrackLine.style.opacity = '0';
+
+      // Timed bloom and text fade-in coordinated with the checkmark arrival
+      setTimeout(() => {
+        successAura.classList.add('visible');
+      }, 380);
+
+      setTimeout(() => {
+        successTitleSection.classList.add('visible');
+        continueBtn.classList.add('visible');
+      }, 550);
+    }
+
+    function triggerElasticWobble() {
+      barState.mode = 'elastic-error';
+      barState.scannerActive = false;
+      barState.color = "#f43f5e";
+      barState.glowColor = "rgba(244, 63, 94, 0.55)";
+
+      // Pluck the string: initial downward sag velocity (as seen in video ef_160.png)
+      barState.elasticOffset = 10;
+      barState.elasticVelocity = -3.8;
+
+      // Shake the card in sync
+      otpCard.classList.remove('shake-error');
+      void otpCard.offsetWidth;
+      otpCard.classList.add('shake-error');
+
+      // Highlight boxes
+      boxes.forEach(b => b.classList.add('error'));
+      errorState.classList.remove('hidden');
+
+      // Notification banner appears right after error!
+      setTimeout(() => {
+        showNotificationBanner();
+      }, 650);
+
+      // Sequentially clear digits from right to left as seen in ef2_240.png
+      setTimeout(() => {
+        let cur = CODE_LENGTH - 1;
+        const clearTimer = setInterval(() => {
+          if (cur >= 0) {
+            digits[cur] = "";
+            activeIndex = cur;
+            updateBoxesUI();
+            updateBarTargets();
+            cur--;
+          } else {
+            clearInterval(clearTimer);
+            activeIndex = 0;
+            barState.mode = 'normal';
+            updateBoxesUI();
+            updateBarTargets();
+          }
+        }, 65);
+      }, 1000);
+    }
+
+    // Boxes & Inputs UI
+    function updateBoxesUI() {
+      boxes.forEach((box, index) => {
+        const val = digits[index];
+        const textSpan = box.querySelector('.digit-text');
+        textSpan.textContent = val;
+
+        box.classList.remove('active', 'filled', 'empty');
+        if (barState.mode !== 'elastic-error') {
+          box.classList.remove('error');
+        }
+
+        if (val) {
+          box.classList.add('filled');
+        } else {
+          box.classList.add('empty');
+        }
+
+        if (index === activeIndex && !isChecking && !isSuccess) {
+          box.classList.add('active');
+        }
+      });
+    }
+
+    function focusBox(index) {
+      if (isChecking || isSuccess) return;
+      activeIndex = Math.min(Math.max(0, index), CODE_LENGTH - 1);
+      updateBoxesUI();
+      updateBarTargets();
+      nativeInput.focus();
+    }
+
+    function enterDigit(digit) {
+      if (isChecking || isSuccess) return;
+
+      digits[activeIndex] = digit;
+      playKeyClick();
+      hideError();
+
+      if (activeIndex < CODE_LENGTH - 1) {
+        activeIndex++;
+      }
+      updateBoxesUI();
+      updateBarTargets();
+
+      // Check full code
+      const fullCode = digits.join('');
+      if (fullCode.length === CODE_LENGTH && digits.every(d => d !== "")) {
+        verifyCode(fullCode);
+      }
+    }
+
+    function handleBackspace() {
+      if (isChecking || isSuccess) return;
+
+      if (digits[activeIndex]) {
+        digits[activeIndex] = "";
+      } else if (activeIndex > 0) {
+        activeIndex--;
+        digits[activeIndex] = "";
+      }
+      playKeyClick();
+      hideError();
+      updateBoxesUI();
+      updateBarTargets();
+    }
+
+    // Verification Logic
+    function verifyCode(code) {
+      isChecking = true;
+      activeIndex = -1;
+      updateBoxesUI();
+
+      // Expand bar across all boxes for checking
+      barState.targetP1 = { x: trackStartX, y: trackY };
+      barState.targetPm = { x: (trackStartX + trackEndX) / 2, y: trackY };
+      barState.targetP2 = { x: trackEndX, y: trackY };
+      barState.scannerActive = true;
+      barState.scannerPos = 0;
+
+      timerState.classList.add('hidden');
+      errorState.classList.add('hidden');
+      checkingState.classList.remove('hidden');
+      checkingState.classList.add('flex');
+
+      // Extended checking duration so the scanning loading runner can be appreciated smoothly
+      const checkDuration = 1650;
+
+      setTimeout(() => {
+        checkingState.classList.remove('flex');
+        checkingState.classList.add('hidden');
+        barState.scannerActive = false;
+
+        if (code === CORRECT_CODE) {
+          isSuccess = true;
+          isChecking = false;
+          playSuccessChime();
+          morphToCheckmark();
+        } else {
+          isChecking = false;
+          playErrorThud();
+          triggerElasticWobble();
+        }
+      }, checkDuration);
+    }
+
+    function hideError() {
+      errorState.classList.add('hidden');
+      timerState.classList.remove('hidden');
+      boxes.forEach(b => b.classList.remove('error'));
+      barState.mode = 'normal';
+    }
+
+    function resetVerification() {
+      isChecking = false;
+      isSuccess = false;
+      digits = Array(CODE_LENGTH).fill("");
+      activeIndex = 0;
+      barState.mode = 'normal';
+      barState.scannerActive = false;
+      barState.elasticOffset = 0;
+      barState.elasticVelocity = 0;
+
+      // Restore UI visibility
+      headerSection.style.opacity = '1';
+      otpBoxContainer.style.opacity = '1';
+      footerSection.style.opacity = '1';
+      staticTrackLine.style.opacity = '1';
+
+      successAura.classList.remove('visible');
+      successTitleSection.classList.remove('visible');
+      continueBtn.classList.remove('visible');
+
+      hideError();
+      updateLayoutMetrics();
+      updateBoxesUI();
+      updateBarTargets();
+      startTimer();
+      nativeInput.focus();
+    }
+
+    // Push Notification Banner
+    let bannerTimeout = null;
+    function showNotificationBanner() {
+      playNotificationDing();
+      pushNotification.classList.add('visible');
+      clearTimeout(bannerTimeout);
+      bannerTimeout = setTimeout(() => {
+        pushNotification.classList.remove('visible');
+      }, 8500);
+    }
+
+    function handleAutoFillClick() {
+      pushNotification.classList.remove('visible');
+      fillCodeSequentially(CORRECT_CODE);
+    }
+
+    function fillCodeSequentially(code, onComplete) {
+      if (barState.mode === 'checkmark' || barState.mode === 'x-morph') {
+        resetVerification();
+      }
+
+      digits = Array(CODE_LENGTH).fill("");
+      activeIndex = 0;
+      updateBoxesUI();
+      updateBarTargets();
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < code.length) {
+          digits[i] = code[i];
+          activeIndex = Math.min(i + 1, CODE_LENGTH - 1);
+          playKeyClick();
+          updateBoxesUI();
+          updateBarTargets();
+          i++;
+        } else {
+          clearInterval(interval);
+          if (onComplete) onComplete();
+          else verifyCode(code);
+        }
+      }, 85);
+    }
+
+    // Automated Video Scenario Simulation
+    function runExactVideoDemo() {
+      resetVerification();
+      
+      // Step 1: Type 2, 8, 4, 6, 1, 9
+      const wrong = WRONG_CODE_DEMO;
+      let i = 0;
+      const typeInterval = setInterval(() => {
+        if (i < wrong.length) {
+          enterDigit(wrong[i]);
+          i++;
+        } else {
+          clearInterval(typeInterval);
+          // Step 2: Error wobbles, banner appears
+          // Step 3: Fill clicked after 2.6s
+          setTimeout(() => {
+            if (pushNotification.classList.contains('visible')) {
+              handleAutoFillClick();
+            }
+          }, 2600);
+        }
+      }, 230);
+    }
+
+    function simulateWrongCode() {
+      resetVerification();
+      fillCodeSequentially(WRONG_CODE_DEMO);
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      document.getElementById('soundLabel').textContent = isSoundEnabled ? "소리 켬" : "소리 끔";
+    }
+
+    // Timer Countdown
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerValue = initialTimer;
+      updateTimerUI();
+      timerInterval = setInterval(() => {
+        timerValue--;
+        if (timerValue <= 0) {
+          clearInterval(timerInterval);
+          timerText.classList.add('hidden');
+          resendBtn.classList.remove('hidden');
+        } else {
+          updateTimerUI();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      timerSeconds.textContent = `0:${timerValue.toString().padStart(2, '0')}`;
+      const progress = (timerValue / initialTimer) * 100;
+      timerCircle.setAttribute('stroke-dashoffset', 100 - progress);
+    }
+
+    function triggerResend() {
+      resendBtn.classList.add('hidden');
+      timerText.classList.remove('hidden');
+      startTimer();
+      showNotificationBanner();
+    }
+
+    // Keyboard & Native input listener
+    window.addEventListener('keydown', (e) => {
+      if (isChecking || isSuccess) return;
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        enterDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (activeIndex > 0) focusBox(activeIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (activeIndex < CODE_LENGTH - 1) focusBox(activeIndex + 1);
+      }
+    });
+
+    nativeInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (val) {
+        const lastChar = val.slice(-1);
+        if (lastChar >= '0' && lastChar <= '9') {
+          enterDigit(lastChar);
+        }
+      }
+      nativeInput.value = '';
+    });
+
+    // Window Resize & Parallax
+    window.addEventListener('resize', () => {
+      updateLayoutMetrics();
+      updateBarTargets();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      ambientGlow.style.setProperty('--glow-x', `${x}%`);
+      ambientGlow.style.setProperty('--glow-y', `${y}%`);
+    });
+
+    otpCard.addEventListener('click', (e) => {
+      if (!isChecking && !isSuccess && e.target.tagName !== 'BUTTON') {
+        nativeInput.focus();
+      }
+    });
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLayoutMetrics();
+      // Initialize bar start position
+      if (boxRects.length > 0) {
+        barState.p1 = { x: boxRects[0].left, y: trackY };
+        barState.pm = { x: (boxRects[0].left + boxRects[0].left + 16) / 2, y: trackY };
+        barState.p2 = { x: boxRects[0].left + 16, y: trackY };
+      }
+      updateBoxesUI();
+      updateBarTargets();
+      startTimer();
+      requestAnimationFrame(animationLoop);
+      setTimeout(() => nativeInput.focus(), 300);
+    });
+  </script>
+</body>
+</html>
